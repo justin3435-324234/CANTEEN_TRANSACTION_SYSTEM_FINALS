@@ -180,10 +180,10 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.Designer.vb">
-      <DependentUpon>Form1.vb</DependentUpon>
+    <Compile Include="frmKiosk.Designer.vb">
+      <DependentUpon>frmKiosk.vb</DependentUpon>
     </Compile>
-    <Compile Include="Form1.vb">
+    <Compile Include="frmKiosk.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmHistory.Designer.vb">
@@ -211,10 +211,22 @@
       <DependentUpon>frmLogin.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="frmPendingOrders.Designer.vb">
+      <DependentUpon>frmPendingOrders.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmPendingOrders.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="frmPOS.Designer.vb">
       <DependentUpon>frmPOS.vb</DependentUpon>
     </Compile>
     <Compile Include="frmPOS.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSystemSelect.Designer.vb">
+      <DependentUpon>frmSystemSelect.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmSystemSelect.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SalesTracker.vb" />
@@ -236,8 +248,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.vb</DependentUpon>
+    <EmbeddedResource Include="frmKiosk.resx">
+      <DependentUpon>frmKiosk.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmHistory.resx">
       <DependentUpon>frmHistory.vb</DependentUpon>
@@ -254,8 +266,14 @@
     <EmbeddedResource Include="frmLogin.resx">
       <DependentUpon>frmLogin.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmPendingOrders.resx">
+      <DependentUpon>frmPendingOrders.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmPOS.resx">
       <DependentUpon>frmPOS.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSystemSelect.resx">
+      <DependentUpon>frmSystemSelect.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
