@@ -25,6 +25,7 @@ Partial Class frmPOS
         Me.pnlHeader = New System.Windows.Forms.Panel()
         Me.btnClose = New System.Windows.Forms.Button()
         Me.lblTitle = New System.Windows.Forms.Label()
+        Me.btnPendingOrders = New System.Windows.Forms.Button()
         Me.pnlCartContainer = New System.Windows.Forms.Panel()
         Me.btnLogout = New System.Windows.Forms.Button()
         Me.Panel1 = New System.Windows.Forms.Panel()
@@ -48,31 +49,31 @@ Partial Class frmPOS
         Me.lblCartHeader = New System.Windows.Forms.Label()
         Me.pnlProductsContainer = New System.Windows.Forms.Panel()
         Me.flpProducts = New System.Windows.Forms.FlowLayoutPanel()
-        Me.btnProdAdobo = New System.Windows.Forms.Button()
-        Me.btnProdLongganisa = New System.Windows.Forms.Button()
-        Me.btnProdSpam = New System.Windows.Forms.Button()
-        Me.btnProdShanghai = New System.Windows.Forms.Button()
-        Me.btnProdRice = New System.Windows.Forms.Button()
-        Me.btnProdSiomaiBig = New System.Windows.Forms.Button()
-        Me.btnProdSiomaiSmall = New System.Windows.Forms.Button()
-        Me.btnProdSiopao = New System.Windows.Forms.Button()
-        Me.btnProdTuron = New System.Windows.Forms.Button()
-        Me.btnProdCorndog = New System.Windows.Forms.Button()
-        Me.btnProdMineralWater = New System.Windows.Forms.Button()
-        Me.btnProdLiptonIceTea = New System.Windows.Forms.Button()
-        Me.btnProdMilo = New System.Windows.Forms.Button()
-        Me.btnProdKopiko = New System.Windows.Forms.Button()
-        Me.btnProdIcedCoffee = New System.Windows.Forms.Button()
-        Me.btnProdIceCream = New System.Windows.Forms.Button()
-        Me.btnProdFudgeeBar = New System.Windows.Forms.Button()
-        Me.btnProdDoweeDonut = New System.Windows.Forms.Button()
-        Me.btnProdOreo = New System.Windows.Forms.Button()
-        Me.btnProdChocolateCake = New System.Windows.Forms.Button()
-        Me.btnProdNoodlesBulalo = New System.Windows.Forms.Button()
-        Me.btnProdNoodlesSeafood = New System.Windows.Forms.Button()
-        Me.btnProdPancitCanton = New System.Windows.Forms.Button()
-        Me.btnProdLuckyMeNoodles = New System.Windows.Forms.Button()
-        Me.btnProdLuckyMeCanton = New System.Windows.Forms.Button()
+        Me.ucPhPOS1 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS2 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS3 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS4 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS5 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS6 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS7 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS8 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS9 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS10 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS11 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS12 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS13 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS14 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS15 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS16 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS17 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS18 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS19 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS20 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS21 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS22 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS23 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS24 = New CANTEENSYSTEM.ucProductButton()
+        Me.ucPhPOS25 = New CANTEENSYSTEM.ucProductButton()
         Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
         Me.btnCatAll = New System.Windows.Forms.Button()
         Me.btnCatDrinks = New System.Windows.Forms.Button()
@@ -81,6 +82,7 @@ Partial Class frmPOS
         Me.btnCatInstant = New System.Windows.Forms.Button()
         Me.btnCatMeals = New System.Windows.Forms.Button()
         Me.txtSearch = New System.Windows.Forms.TextBox()
+        Me.object_1ab29191_8921_45b5_8bec_8dbb7c11c102 = New System.Windows.Forms.Panel()
         Me.pnlHeader.SuspendLayout()
         Me.pnlCartContainer.SuspendLayout()
         Me.Panel1.SuspendLayout()
@@ -132,9 +134,26 @@ Partial Class frmPOS
         Me.lblTitle.TabIndex = 0
         Me.lblTitle.Text = "CANTEEN POS TERMINAL"
         '
+        'btnPendingOrders
+        '
+        Me.btnPendingOrders.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnPendingOrders.BackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
+        Me.btnPendingOrders.FlatAppearance.BorderSize = 0
+        Me.btnPendingOrders.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnPendingOrders.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnPendingOrders.ForeColor = System.Drawing.Color.Black
+        Me.btnPendingOrders.Location = New System.Drawing.Point(29, 565)
+        Me.btnPendingOrders.Margin = New System.Windows.Forms.Padding(4)
+        Me.btnPendingOrders.Name = "btnPendingOrders"
+        Me.btnPendingOrders.Size = New System.Drawing.Size(343, 35)
+        Me.btnPendingOrders.TabIndex = 5
+        Me.btnPendingOrders.Text = "⏳ PENDING ORDERS"
+        Me.btnPendingOrders.UseVisualStyleBackColor = False
+        '
         'pnlCartContainer
         '
         Me.pnlCartContainer.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
+        Me.pnlCartContainer.Controls.Add(Me.btnPendingOrders)
         Me.pnlCartContainer.Controls.Add(Me.btnLogout)
         Me.pnlCartContainer.Controls.Add(Me.Panel1)
         Me.pnlCartContainer.Controls.Add(Me.btnCancelPayment)
@@ -146,7 +165,7 @@ Partial Class frmPOS
         Me.pnlCartContainer.Location = New System.Drawing.Point(731, 46)
         Me.pnlCartContainer.Margin = New System.Windows.Forms.Padding(4)
         Me.pnlCartContainer.Name = "pnlCartContainer"
-        Me.pnlCartContainer.Size = New System.Drawing.Size(383, 690)
+        Me.pnlCartContainer.Size = New System.Drawing.Size(414, 755)
         Me.pnlCartContainer.TabIndex = 2
         '
         'btnLogout
@@ -158,7 +177,7 @@ Partial Class frmPOS
         Me.btnLogout.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnLogout.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnLogout.ForeColor = System.Drawing.Color.White
-        Me.btnLogout.Location = New System.Drawing.Point(29, 644)
+        Me.btnLogout.Location = New System.Drawing.Point(29, 692)
         Me.btnLogout.Margin = New System.Windows.Forms.Padding(3, 2, 3, 2)
         Me.btnLogout.Name = "btnLogout"
         Me.btnLogout.Size = New System.Drawing.Size(343, 36)
@@ -230,10 +249,10 @@ Partial Class frmPOS
         Me.btnCancelPayment.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(130, Byte), Integer))
         Me.btnCancelPayment.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnCancelPayment.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnCancelPayment.Location = New System.Drawing.Point(29, 601)
+        Me.btnCancelPayment.Location = New System.Drawing.Point(29, 648)
         Me.btnCancelPayment.Margin = New System.Windows.Forms.Padding(4)
         Me.btnCancelPayment.Name = "btnCancelPayment"
-        Me.btnCancelPayment.Size = New System.Drawing.Size(343, 37)
+        Me.btnCancelPayment.Size = New System.Drawing.Size(343, 38)
         Me.btnCancelPayment.TabIndex = 5
         Me.btnCancelPayment.Text = "CANCEL PAYMENT"
         Me.btnCancelPayment.UseVisualStyleBackColor = False
@@ -314,7 +333,7 @@ Partial Class frmPOS
         Me.btnOpenPayment.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(130, Byte), Integer))
         Me.btnOpenPayment.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnOpenPayment.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnOpenPayment.Location = New System.Drawing.Point(29, 560)
+        Me.btnOpenPayment.Location = New System.Drawing.Point(29, 608)
         Me.btnOpenPayment.Margin = New System.Windows.Forms.Padding(4)
         Me.btnOpenPayment.Name = "btnOpenPayment"
         Me.btnOpenPayment.Size = New System.Drawing.Size(343, 37)
@@ -394,461 +413,411 @@ Partial Class frmPOS
         'flpProducts
         '
         Me.flpProducts.AutoScroll = True
-        Me.flpProducts.Controls.Add(Me.btnProdAdobo)
-        Me.flpProducts.Controls.Add(Me.btnProdLongganisa)
-        Me.flpProducts.Controls.Add(Me.btnProdSpam)
-        Me.flpProducts.Controls.Add(Me.btnProdShanghai)
-        Me.flpProducts.Controls.Add(Me.btnProdRice)
-        Me.flpProducts.Controls.Add(Me.btnProdSiomaiBig)
-        Me.flpProducts.Controls.Add(Me.btnProdSiomaiSmall)
-        Me.flpProducts.Controls.Add(Me.btnProdSiopao)
-        Me.flpProducts.Controls.Add(Me.btnProdTuron)
-        Me.flpProducts.Controls.Add(Me.btnProdCorndog)
-        Me.flpProducts.Controls.Add(Me.btnProdMineralWater)
-        Me.flpProducts.Controls.Add(Me.btnProdLiptonIceTea)
-        Me.flpProducts.Controls.Add(Me.btnProdMilo)
-        Me.flpProducts.Controls.Add(Me.btnProdKopiko)
-        Me.flpProducts.Controls.Add(Me.btnProdIcedCoffee)
-        Me.flpProducts.Controls.Add(Me.btnProdIceCream)
-        Me.flpProducts.Controls.Add(Me.btnProdFudgeeBar)
-        Me.flpProducts.Controls.Add(Me.btnProdDoweeDonut)
-        Me.flpProducts.Controls.Add(Me.btnProdOreo)
-        Me.flpProducts.Controls.Add(Me.btnProdChocolateCake)
-        Me.flpProducts.Controls.Add(Me.btnProdNoodlesBulalo)
-        Me.flpProducts.Controls.Add(Me.btnProdNoodlesSeafood)
-        Me.flpProducts.Controls.Add(Me.btnProdPancitCanton)
-        Me.flpProducts.Controls.Add(Me.btnProdLuckyMeNoodles)
-        Me.flpProducts.Controls.Add(Me.btnProdLuckyMeCanton)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS1)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS2)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS3)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS4)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS5)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS6)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS7)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS8)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS9)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS10)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS11)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS12)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS13)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS14)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS15)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS16)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS17)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS18)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS19)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS20)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS21)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS22)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS23)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS24)
+        Me.flpProducts.Controls.Add(Me.ucPhPOS25)
         Me.flpProducts.Location = New System.Drawing.Point(19, 148)
         Me.flpProducts.Margin = New System.Windows.Forms.Padding(4)
         Me.flpProducts.Name = "flpProducts"
         Me.flpProducts.Size = New System.Drawing.Size(692, 420)
         Me.flpProducts.TabIndex = 2
         '
-        'btnProdAdobo
+        'ucPhPOS1
         '
-        Me.btnProdAdobo.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdAdobo.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdAdobo.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdAdobo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdAdobo.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdAdobo.ForeColor = System.Drawing.Color.White
-        Me.btnProdAdobo.Location = New System.Drawing.Point(4, 4)
-        Me.btnProdAdobo.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdAdobo.Name = "btnProdAdobo"
-        Me.btnProdAdobo.Size = New System.Drawing.Size(100, 68)
-        Me.btnProdAdobo.TabIndex = 0
-        Me.btnProdAdobo.Tag = "MEALS"
-        Me.btnProdAdobo.Text = "Chicken Adobo ₱65.00"
-        Me.btnProdAdobo.UseVisualStyleBackColor = False
+        Me.ucPhPOS1.ItemName = ""
+        Me.ucPhPOS1.Location = New System.Drawing.Point(4, 4)
+        Me.ucPhPOS1.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS1.Name = "ucPhPOS1"
+        Me.ucPhPOS1.PreviewEnabled = True
+        Me.ucPhPOS1.PreviewText = "Adobo" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱65.00"
+        Me.ucPhPOS1.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS1.ProductId = 0
+        Me.ucPhPOS1.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS1.Stock = 0
+        Me.ucPhPOS1.TabIndex = 0
+        Me.ucPhPOS1.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdLongganisa
+        'ucPhPOS2
         '
-        Me.btnProdLongganisa.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdLongganisa.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdLongganisa.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdLongganisa.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdLongganisa.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdLongganisa.ForeColor = System.Drawing.Color.White
-        Me.btnProdLongganisa.Location = New System.Drawing.Point(112, 4)
-        Me.btnProdLongganisa.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdLongganisa.Name = "btnProdLongganisa"
-        Me.btnProdLongganisa.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdLongganisa.TabIndex = 1
-        Me.btnProdLongganisa.Tag = "MEALS"
-        Me.btnProdLongganisa.Text = "Longganisa ₱45.00"
-        Me.btnProdLongganisa.UseVisualStyleBackColor = False
+        Me.ucPhPOS2.ItemName = ""
+        Me.ucPhPOS2.Location = New System.Drawing.Point(112, 4)
+        Me.ucPhPOS2.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS2.Name = "ucPhPOS2"
+        Me.ucPhPOS2.PreviewEnabled = True
+        Me.ucPhPOS2.PreviewText = "Longganisa" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱45.00"
+        Me.ucPhPOS2.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS2.ProductId = 0
+        Me.ucPhPOS2.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS2.Stock = 0
+        Me.ucPhPOS2.TabIndex = 1
+        Me.ucPhPOS2.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdSpam
+        'ucPhPOS3
         '
-        Me.btnProdSpam.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdSpam.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdSpam.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdSpam.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdSpam.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdSpam.ForeColor = System.Drawing.Color.White
-        Me.btnProdSpam.Location = New System.Drawing.Point(223, 4)
-        Me.btnProdSpam.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdSpam.Name = "btnProdSpam"
-        Me.btnProdSpam.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdSpam.TabIndex = 2
-        Me.btnProdSpam.Tag = "MEALS"
-        Me.btnProdSpam.Text = "Spam ₱45.00"
-        Me.btnProdSpam.UseVisualStyleBackColor = False
+        Me.ucPhPOS3.ItemName = ""
+        Me.ucPhPOS3.Location = New System.Drawing.Point(220, 4)
+        Me.ucPhPOS3.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS3.Name = "ucPhPOS3"
+        Me.ucPhPOS3.PreviewEnabled = True
+        Me.ucPhPOS3.PreviewText = "Rice" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱15.00"
+        Me.ucPhPOS3.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS3.ProductId = 0
+        Me.ucPhPOS3.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS3.Stock = 0
+        Me.ucPhPOS3.TabIndex = 2
+        Me.ucPhPOS3.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdShanghai
+        'ucPhPOS4
         '
-        Me.btnProdShanghai.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdShanghai.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdShanghai.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdShanghai.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdShanghai.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdShanghai.ForeColor = System.Drawing.Color.White
-        Me.btnProdShanghai.Location = New System.Drawing.Point(334, 4)
-        Me.btnProdShanghai.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdShanghai.Name = "btnProdShanghai"
-        Me.btnProdShanghai.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdShanghai.TabIndex = 3
-        Me.btnProdShanghai.Tag = "MEALS"
-        Me.btnProdShanghai.Text = "Shanghai ₱20.00"
-        Me.btnProdShanghai.UseVisualStyleBackColor = False
+        Me.ucPhPOS4.ItemName = ""
+        Me.ucPhPOS4.Location = New System.Drawing.Point(328, 4)
+        Me.ucPhPOS4.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS4.Name = "ucPhPOS4"
+        Me.ucPhPOS4.PreviewEnabled = True
+        Me.ucPhPOS4.PreviewText = "Spam" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱45.00"
+        Me.ucPhPOS4.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS4.ProductId = 0
+        Me.ucPhPOS4.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS4.Stock = 0
+        Me.ucPhPOS4.TabIndex = 3
+        Me.ucPhPOS4.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdRice
+        'ucPhPOS5
         '
-        Me.btnProdRice.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdRice.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdRice.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdRice.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdRice.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdRice.ForeColor = System.Drawing.Color.White
-        Me.btnProdRice.Location = New System.Drawing.Point(445, 4)
-        Me.btnProdRice.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdRice.Name = "btnProdRice"
-        Me.btnProdRice.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdRice.TabIndex = 4
-        Me.btnProdRice.Tag = "MEALS"
-        Me.btnProdRice.Text = "Rice ₱15.00"
-        Me.btnProdRice.UseVisualStyleBackColor = False
+        Me.ucPhPOS5.ItemName = ""
+        Me.ucPhPOS5.Location = New System.Drawing.Point(436, 4)
+        Me.ucPhPOS5.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS5.Name = "ucPhPOS5"
+        Me.ucPhPOS5.PreviewEnabled = True
+        Me.ucPhPOS5.PreviewText = "Shanghai" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱20.00"
+        Me.ucPhPOS5.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS5.ProductId = 0
+        Me.ucPhPOS5.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS5.Stock = 0
+        Me.ucPhPOS5.TabIndex = 4
+        Me.ucPhPOS5.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdSiomaiBig
+        'ucPhPOS6
         '
-        Me.btnProdSiomaiBig.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdSiomaiBig.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdSiomaiBig.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdSiomaiBig.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdSiomaiBig.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdSiomaiBig.ForeColor = System.Drawing.Color.White
-        Me.btnProdSiomaiBig.Location = New System.Drawing.Point(556, 4)
-        Me.btnProdSiomaiBig.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdSiomaiBig.Name = "btnProdSiomaiBig"
-        Me.btnProdSiomaiBig.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdSiomaiBig.TabIndex = 5
-        Me.btnProdSiomaiBig.Tag = "SNACKS"
-        Me.btnProdSiomaiBig.Text = "SIOMAI BIG ₱10.00"
-        Me.btnProdSiomaiBig.UseVisualStyleBackColor = False
+        Me.ucPhPOS6.ItemName = ""
+        Me.ucPhPOS6.Location = New System.Drawing.Point(544, 4)
+        Me.ucPhPOS6.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS6.Name = "ucPhPOS6"
+        Me.ucPhPOS6.PreviewEnabled = True
+        Me.ucPhPOS6.PreviewText = "Siomai Big" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱10.00"
+        Me.ucPhPOS6.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS6.ProductId = 0
+        Me.ucPhPOS6.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS6.Stock = 0
+        Me.ucPhPOS6.TabIndex = 5
+        Me.ucPhPOS6.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdSiomaiSmall
+        'ucPhPOS7
         '
-        Me.btnProdSiomaiSmall.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdSiomaiSmall.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdSiomaiSmall.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdSiomaiSmall.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdSiomaiSmall.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdSiomaiSmall.ForeColor = System.Drawing.Color.White
-        Me.btnProdSiomaiSmall.Location = New System.Drawing.Point(4, 80)
-        Me.btnProdSiomaiSmall.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdSiomaiSmall.Name = "btnProdSiomaiSmall"
-        Me.btnProdSiomaiSmall.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdSiomaiSmall.TabIndex = 6
-        Me.btnProdSiomaiSmall.Tag = "SNACKS"
-        Me.btnProdSiomaiSmall.Text = "SIOMAI SMALL ₱6.00"
-        Me.btnProdSiomaiSmall.UseVisualStyleBackColor = False
+        Me.ucPhPOS7.ItemName = ""
+        Me.ucPhPOS7.Location = New System.Drawing.Point(4, 80)
+        Me.ucPhPOS7.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS7.Name = "ucPhPOS7"
+        Me.ucPhPOS7.PreviewEnabled = True
+        Me.ucPhPOS7.PreviewText = "Siomai Small" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱6.00"
+        Me.ucPhPOS7.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS7.ProductId = 0
+        Me.ucPhPOS7.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS7.Stock = 0
+        Me.ucPhPOS7.TabIndex = 6
+        Me.ucPhPOS7.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdSiopao
+        'ucPhPOS8
         '
-        Me.btnProdSiopao.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdSiopao.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdSiopao.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdSiopao.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdSiopao.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdSiopao.ForeColor = System.Drawing.Color.White
-        Me.btnProdSiopao.Location = New System.Drawing.Point(115, 80)
-        Me.btnProdSiopao.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdSiopao.Name = "btnProdSiopao"
-        Me.btnProdSiopao.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdSiopao.TabIndex = 7
-        Me.btnProdSiopao.Tag = "SNACKS"
-        Me.btnProdSiopao.Text = "SIOPAO ₱25.00"
-        Me.btnProdSiopao.UseVisualStyleBackColor = False
+        Me.ucPhPOS8.ItemName = ""
+        Me.ucPhPOS8.Location = New System.Drawing.Point(112, 80)
+        Me.ucPhPOS8.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS8.Name = "ucPhPOS8"
+        Me.ucPhPOS8.PreviewEnabled = True
+        Me.ucPhPOS8.PreviewText = "Siopao" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱35.00"
+        Me.ucPhPOS8.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS8.ProductId = 0
+        Me.ucPhPOS8.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS8.Stock = 0
+        Me.ucPhPOS8.TabIndex = 7
+        Me.ucPhPOS8.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdTuron
+        'ucPhPOS9
         '
-        Me.btnProdTuron.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdTuron.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdTuron.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdTuron.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdTuron.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdTuron.ForeColor = System.Drawing.Color.White
-        Me.btnProdTuron.Location = New System.Drawing.Point(226, 80)
-        Me.btnProdTuron.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdTuron.Name = "btnProdTuron"
-        Me.btnProdTuron.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdTuron.TabIndex = 8
-        Me.btnProdTuron.Tag = "SNACKS"
-        Me.btnProdTuron.Text = "Turon ₱15.00"
-        Me.btnProdTuron.UseVisualStyleBackColor = False
+        Me.ucPhPOS9.ItemName = ""
+        Me.ucPhPOS9.Location = New System.Drawing.Point(220, 80)
+        Me.ucPhPOS9.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS9.Name = "ucPhPOS9"
+        Me.ucPhPOS9.PreviewEnabled = True
+        Me.ucPhPOS9.PreviewText = "Turon" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱20.00"
+        Me.ucPhPOS9.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS9.ProductId = 0
+        Me.ucPhPOS9.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS9.Stock = 0
+        Me.ucPhPOS9.TabIndex = 8
+        Me.ucPhPOS9.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdCorndog
+        'ucPhPOS10
         '
-        Me.btnProdCorndog.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdCorndog.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdCorndog.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdCorndog.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdCorndog.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdCorndog.ForeColor = System.Drawing.Color.White
-        Me.btnProdCorndog.Location = New System.Drawing.Point(337, 80)
-        Me.btnProdCorndog.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdCorndog.Name = "btnProdCorndog"
-        Me.btnProdCorndog.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdCorndog.TabIndex = 9
-        Me.btnProdCorndog.Tag = "SNACKS"
-        Me.btnProdCorndog.Text = "Corndog ₱25.00"
-        Me.btnProdCorndog.UseVisualStyleBackColor = False
+        Me.ucPhPOS10.ItemName = ""
+        Me.ucPhPOS10.Location = New System.Drawing.Point(328, 80)
+        Me.ucPhPOS10.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS10.Name = "ucPhPOS10"
+        Me.ucPhPOS10.PreviewEnabled = True
+        Me.ucPhPOS10.PreviewText = "Corndog" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱35.00"
+        Me.ucPhPOS10.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS10.ProductId = 0
+        Me.ucPhPOS10.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS10.Stock = 0
+        Me.ucPhPOS10.TabIndex = 9
+        Me.ucPhPOS10.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdMineralWater
+        'ucPhPOS11
         '
-        Me.btnProdMineralWater.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdMineralWater.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdMineralWater.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdMineralWater.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdMineralWater.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdMineralWater.ForeColor = System.Drawing.Color.White
-        Me.btnProdMineralWater.Location = New System.Drawing.Point(448, 80)
-        Me.btnProdMineralWater.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdMineralWater.Name = "btnProdMineralWater"
-        Me.btnProdMineralWater.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdMineralWater.TabIndex = 10
-        Me.btnProdMineralWater.Tag = "DRINKS"
-        Me.btnProdMineralWater.Text = "MINERAL ₱15.00"
-        Me.btnProdMineralWater.UseVisualStyleBackColor = False
+        Me.ucPhPOS11.ItemName = ""
+        Me.ucPhPOS11.Location = New System.Drawing.Point(436, 80)
+        Me.ucPhPOS11.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS11.Name = "ucPhPOS11"
+        Me.ucPhPOS11.PreviewEnabled = True
+        Me.ucPhPOS11.PreviewText = "Mineral Water" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱15.00"
+        Me.ucPhPOS11.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS11.ProductId = 0
+        Me.ucPhPOS11.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS11.Stock = 0
+        Me.ucPhPOS11.TabIndex = 10
+        Me.ucPhPOS11.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdLiptonIceTea
+        'ucPhPOS12
         '
-        Me.btnProdLiptonIceTea.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdLiptonIceTea.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdLiptonIceTea.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdLiptonIceTea.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdLiptonIceTea.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdLiptonIceTea.ForeColor = System.Drawing.Color.White
-        Me.btnProdLiptonIceTea.Location = New System.Drawing.Point(559, 80)
-        Me.btnProdLiptonIceTea.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdLiptonIceTea.Name = "btnProdLiptonIceTea"
-        Me.btnProdLiptonIceTea.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdLiptonIceTea.TabIndex = 11
-        Me.btnProdLiptonIceTea.Tag = "DRINKS"
-        Me.btnProdLiptonIceTea.Text = "LIPTON ₱30.00"
-        Me.btnProdLiptonIceTea.UseVisualStyleBackColor = False
+        Me.ucPhPOS12.ItemName = ""
+        Me.ucPhPOS12.Location = New System.Drawing.Point(544, 80)
+        Me.ucPhPOS12.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS12.Name = "ucPhPOS12"
+        Me.ucPhPOS12.PreviewEnabled = True
+        Me.ucPhPOS12.PreviewText = "Lipton Ice Tea" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱25.00"
+        Me.ucPhPOS12.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS12.ProductId = 0
+        Me.ucPhPOS12.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS12.Stock = 0
+        Me.ucPhPOS12.TabIndex = 11
+        Me.ucPhPOS12.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdMilo
+        'ucPhPOS13
         '
-        Me.btnProdMilo.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdMilo.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdMilo.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdMilo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdMilo.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdMilo.ForeColor = System.Drawing.Color.White
-        Me.btnProdMilo.Location = New System.Drawing.Point(4, 156)
-        Me.btnProdMilo.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdMilo.Name = "btnProdMilo"
-        Me.btnProdMilo.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdMilo.TabIndex = 12
-        Me.btnProdMilo.Tag = "DRINKS"
-        Me.btnProdMilo.Text = "MILO ₱18.00"
-        Me.btnProdMilo.UseVisualStyleBackColor = False
+        Me.ucPhPOS13.ItemName = ""
+        Me.ucPhPOS13.Location = New System.Drawing.Point(4, 156)
+        Me.ucPhPOS13.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS13.Name = "ucPhPOS13"
+        Me.ucPhPOS13.PreviewEnabled = True
+        Me.ucPhPOS13.PreviewText = "Milo" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱18.00"
+        Me.ucPhPOS13.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS13.ProductId = 0
+        Me.ucPhPOS13.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS13.Stock = 0
+        Me.ucPhPOS13.TabIndex = 12
+        Me.ucPhPOS13.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdKopiko
+        'ucPhPOS14
         '
-        Me.btnProdKopiko.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdKopiko.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdKopiko.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdKopiko.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdKopiko.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdKopiko.ForeColor = System.Drawing.Color.White
-        Me.btnProdKopiko.Location = New System.Drawing.Point(115, 156)
-        Me.btnProdKopiko.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdKopiko.Name = "btnProdKopiko"
-        Me.btnProdKopiko.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdKopiko.TabIndex = 13
-        Me.btnProdKopiko.Tag = "DRINKS"
-        Me.btnProdKopiko.Text = "KOPIKO ₱18.00"
-        Me.btnProdKopiko.UseVisualStyleBackColor = False
+        Me.ucPhPOS14.ItemName = ""
+        Me.ucPhPOS14.Location = New System.Drawing.Point(112, 156)
+        Me.ucPhPOS14.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS14.Name = "ucPhPOS14"
+        Me.ucPhPOS14.PreviewEnabled = True
+        Me.ucPhPOS14.PreviewText = "Kopiko" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱18.00"
+        Me.ucPhPOS14.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS14.ProductId = 0
+        Me.ucPhPOS14.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS14.Stock = 0
+        Me.ucPhPOS14.TabIndex = 13
+        Me.ucPhPOS14.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdIcedCoffee
+        'ucPhPOS15
         '
-        Me.btnProdIcedCoffee.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdIcedCoffee.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdIcedCoffee.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdIcedCoffee.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdIcedCoffee.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdIcedCoffee.ForeColor = System.Drawing.Color.White
-        Me.btnProdIcedCoffee.Location = New System.Drawing.Point(226, 156)
-        Me.btnProdIcedCoffee.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdIcedCoffee.Name = "btnProdIcedCoffee"
-        Me.btnProdIcedCoffee.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdIcedCoffee.TabIndex = 14
-        Me.btnProdIcedCoffee.Tag = "DRINKS"
-        Me.btnProdIcedCoffee.Text = "ICED KOPIKO ₱26.00"
-        Me.btnProdIcedCoffee.UseVisualStyleBackColor = False
+        Me.ucPhPOS15.ItemName = ""
+        Me.ucPhPOS15.Location = New System.Drawing.Point(220, 156)
+        Me.ucPhPOS15.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS15.Name = "ucPhPOS15"
+        Me.ucPhPOS15.PreviewEnabled = True
+        Me.ucPhPOS15.PreviewText = "Iced Kopiko" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱26.00"
+        Me.ucPhPOS15.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS15.ProductId = 0
+        Me.ucPhPOS15.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS15.Stock = 0
+        Me.ucPhPOS15.TabIndex = 14
+        Me.ucPhPOS15.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdIceCream
+        'ucPhPOS16
         '
-        Me.btnProdIceCream.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdIceCream.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdIceCream.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdIceCream.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdIceCream.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdIceCream.ForeColor = System.Drawing.Color.White
-        Me.btnProdIceCream.Location = New System.Drawing.Point(337, 156)
-        Me.btnProdIceCream.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdIceCream.Name = "btnProdIceCream"
-        Me.btnProdIceCream.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdIceCream.TabIndex = 15
-        Me.btnProdIceCream.Tag = "DESSERTS"
-        Me.btnProdIceCream.Text = "Ice Cream ₱20.00"
-        Me.btnProdIceCream.UseVisualStyleBackColor = False
+        Me.ucPhPOS16.ItemName = ""
+        Me.ucPhPOS16.Location = New System.Drawing.Point(328, 156)
+        Me.ucPhPOS16.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS16.Name = "ucPhPOS16"
+        Me.ucPhPOS16.PreviewEnabled = True
+        Me.ucPhPOS16.PreviewText = "Ice Cream" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱20.00"
+        Me.ucPhPOS16.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS16.ProductId = 0
+        Me.ucPhPOS16.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS16.Stock = 0
+        Me.ucPhPOS16.TabIndex = 15
+        Me.ucPhPOS16.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdFudgeeBar
+        'ucPhPOS17
         '
-        Me.btnProdFudgeeBar.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdFudgeeBar.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdFudgeeBar.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdFudgeeBar.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdFudgeeBar.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdFudgeeBar.ForeColor = System.Drawing.Color.White
-        Me.btnProdFudgeeBar.Location = New System.Drawing.Point(448, 156)
-        Me.btnProdFudgeeBar.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdFudgeeBar.Name = "btnProdFudgeeBar"
-        Me.btnProdFudgeeBar.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdFudgeeBar.TabIndex = 16
-        Me.btnProdFudgeeBar.Tag = "DESSERTS"
-        Me.btnProdFudgeeBar.Text = "Fudgee Bar ₱12.00"
-        Me.btnProdFudgeeBar.UseVisualStyleBackColor = False
+        Me.ucPhPOS17.ItemName = ""
+        Me.ucPhPOS17.Location = New System.Drawing.Point(436, 156)
+        Me.ucPhPOS17.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS17.Name = "ucPhPOS17"
+        Me.ucPhPOS17.PreviewEnabled = True
+        Me.ucPhPOS17.PreviewText = "Fudgee Bar" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱12.00"
+        Me.ucPhPOS17.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS17.ProductId = 0
+        Me.ucPhPOS17.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS17.Stock = 0
+        Me.ucPhPOS17.TabIndex = 16
+        Me.ucPhPOS17.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdDoweeDonut
+        'ucPhPOS18
         '
-        Me.btnProdDoweeDonut.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdDoweeDonut.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdDoweeDonut.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdDoweeDonut.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdDoweeDonut.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdDoweeDonut.ForeColor = System.Drawing.Color.White
-        Me.btnProdDoweeDonut.Location = New System.Drawing.Point(559, 156)
-        Me.btnProdDoweeDonut.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdDoweeDonut.Name = "btnProdDoweeDonut"
-        Me.btnProdDoweeDonut.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdDoweeDonut.TabIndex = 17
-        Me.btnProdDoweeDonut.Tag = "DESSERTS"
-        Me.btnProdDoweeDonut.Text = "Dowee Donut ₱15.00"
-        Me.btnProdDoweeDonut.UseVisualStyleBackColor = False
+        Me.ucPhPOS18.ItemName = ""
+        Me.ucPhPOS18.Location = New System.Drawing.Point(544, 156)
+        Me.ucPhPOS18.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS18.Name = "ucPhPOS18"
+        Me.ucPhPOS18.PreviewEnabled = True
+        Me.ucPhPOS18.PreviewText = "Dowee Donut" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱20.00"
+        Me.ucPhPOS18.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS18.ProductId = 0
+        Me.ucPhPOS18.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS18.Stock = 0
+        Me.ucPhPOS18.TabIndex = 17
+        Me.ucPhPOS18.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdOreo
+        'ucPhPOS19
         '
-        Me.btnProdOreo.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdOreo.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdOreo.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdOreo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdOreo.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdOreo.ForeColor = System.Drawing.Color.White
-        Me.btnProdOreo.Location = New System.Drawing.Point(4, 232)
-        Me.btnProdOreo.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdOreo.Name = "btnProdOreo"
-        Me.btnProdOreo.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdOreo.TabIndex = 18
-        Me.btnProdOreo.Tag = "DESSERTS"
-        Me.btnProdOreo.Text = "Oreo ₱12.00"
-        Me.btnProdOreo.UseVisualStyleBackColor = False
+        Me.ucPhPOS19.ItemName = ""
+        Me.ucPhPOS19.Location = New System.Drawing.Point(4, 232)
+        Me.ucPhPOS19.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS19.Name = "ucPhPOS19"
+        Me.ucPhPOS19.PreviewEnabled = True
+        Me.ucPhPOS19.PreviewText = "Oreo" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱12.00"
+        Me.ucPhPOS19.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS19.ProductId = 0
+        Me.ucPhPOS19.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS19.Stock = 0
+        Me.ucPhPOS19.TabIndex = 18
+        Me.ucPhPOS19.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdChocolateCake
+        'ucPhPOS20
         '
-        Me.btnProdChocolateCake.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdChocolateCake.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdChocolateCake.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdChocolateCake.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdChocolateCake.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdChocolateCake.ForeColor = System.Drawing.Color.White
-        Me.btnProdChocolateCake.Location = New System.Drawing.Point(115, 232)
-        Me.btnProdChocolateCake.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdChocolateCake.Name = "btnProdChocolateCake"
-        Me.btnProdChocolateCake.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdChocolateCake.TabIndex = 19
-        Me.btnProdChocolateCake.Tag = "DESSERTS"
-        Me.btnProdChocolateCake.Text = "Chocolate Cake ₱25.00"
-        Me.btnProdChocolateCake.UseVisualStyleBackColor = False
+        Me.ucPhPOS20.ItemName = ""
+        Me.ucPhPOS20.Location = New System.Drawing.Point(112, 232)
+        Me.ucPhPOS20.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS20.Name = "ucPhPOS20"
+        Me.ucPhPOS20.PreviewEnabled = True
+        Me.ucPhPOS20.PreviewText = "Chocolate Cake" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱25.00"
+        Me.ucPhPOS20.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS20.ProductId = 0
+        Me.ucPhPOS20.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS20.Stock = 0
+        Me.ucPhPOS20.TabIndex = 19
+        Me.ucPhPOS20.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdNoodlesBulalo
+        'ucPhPOS21
         '
-        Me.btnProdNoodlesBulalo.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdNoodlesBulalo.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdNoodlesBulalo.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdNoodlesBulalo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdNoodlesBulalo.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdNoodlesBulalo.ForeColor = System.Drawing.Color.White
-        Me.btnProdNoodlesBulalo.Location = New System.Drawing.Point(226, 232)
-        Me.btnProdNoodlesBulalo.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdNoodlesBulalo.Name = "btnProdNoodlesBulalo"
-        Me.btnProdNoodlesBulalo.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdNoodlesBulalo.TabIndex = 20
-        Me.btnProdNoodlesBulalo.Tag = "INSTANT"
-        Me.btnProdNoodlesBulalo.Text = "Noodles Bulalo ₱30.00"
-        Me.btnProdNoodlesBulalo.UseVisualStyleBackColor = False
+        Me.ucPhPOS21.ItemName = ""
+        Me.ucPhPOS21.Location = New System.Drawing.Point(220, 232)
+        Me.ucPhPOS21.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS21.Name = "ucPhPOS21"
+        Me.ucPhPOS21.PreviewEnabled = True
+        Me.ucPhPOS21.PreviewText = "Cup Noodles Bulalo" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱30.00"
+        Me.ucPhPOS21.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS21.ProductId = 0
+        Me.ucPhPOS21.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS21.Stock = 0
+        Me.ucPhPOS21.TabIndex = 20
+        Me.ucPhPOS21.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdNoodlesSeafood
+        'ucPhPOS22
         '
-        Me.btnProdNoodlesSeafood.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdNoodlesSeafood.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdNoodlesSeafood.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdNoodlesSeafood.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdNoodlesSeafood.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdNoodlesSeafood.ForeColor = System.Drawing.Color.White
-        Me.btnProdNoodlesSeafood.Location = New System.Drawing.Point(337, 232)
-        Me.btnProdNoodlesSeafood.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdNoodlesSeafood.Name = "btnProdNoodlesSeafood"
-        Me.btnProdNoodlesSeafood.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdNoodlesSeafood.TabIndex = 21
-        Me.btnProdNoodlesSeafood.Tag = "INSTANT"
-        Me.btnProdNoodlesSeafood.Text = "Noodles Seafood ₱30.00"
-        Me.btnProdNoodlesSeafood.UseVisualStyleBackColor = False
+        Me.ucPhPOS22.ItemName = ""
+        Me.ucPhPOS22.Location = New System.Drawing.Point(328, 232)
+        Me.ucPhPOS22.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS22.Name = "ucPhPOS22"
+        Me.ucPhPOS22.PreviewEnabled = True
+        Me.ucPhPOS22.PreviewText = "Cup Noodles Seafood" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱30.00"
+        Me.ucPhPOS22.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS22.ProductId = 0
+        Me.ucPhPOS22.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS22.Stock = 0
+        Me.ucPhPOS22.TabIndex = 21
+        Me.ucPhPOS22.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdPancitCanton
+        'ucPhPOS23
         '
-        Me.btnProdPancitCanton.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdPancitCanton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdPancitCanton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdPancitCanton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdPancitCanton.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdPancitCanton.ForeColor = System.Drawing.Color.White
-        Me.btnProdPancitCanton.Location = New System.Drawing.Point(448, 232)
-        Me.btnProdPancitCanton.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdPancitCanton.Name = "btnProdPancitCanton"
-        Me.btnProdPancitCanton.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdPancitCanton.TabIndex = 22
-        Me.btnProdPancitCanton.Tag = "INSTANT"
-        Me.btnProdPancitCanton.Text = "Pancit Canton ₱20.00"
-        Me.btnProdPancitCanton.UseVisualStyleBackColor = False
+        Me.ucPhPOS23.ItemName = ""
+        Me.ucPhPOS23.Location = New System.Drawing.Point(436, 232)
+        Me.ucPhPOS23.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS23.Name = "ucPhPOS23"
+        Me.ucPhPOS23.PreviewEnabled = True
+        Me.ucPhPOS23.PreviewText = "Pancit Canton" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱20.00"
+        Me.ucPhPOS23.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS23.ProductId = 0
+        Me.ucPhPOS23.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS23.Stock = 0
+        Me.ucPhPOS23.TabIndex = 22
+        Me.ucPhPOS23.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdLuckyMeNoodles
+        'ucPhPOS24
         '
-        Me.btnProdLuckyMeNoodles.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdLuckyMeNoodles.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdLuckyMeNoodles.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdLuckyMeNoodles.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdLuckyMeNoodles.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdLuckyMeNoodles.ForeColor = System.Drawing.Color.White
-        Me.btnProdLuckyMeNoodles.Location = New System.Drawing.Point(559, 232)
-        Me.btnProdLuckyMeNoodles.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdLuckyMeNoodles.Name = "btnProdLuckyMeNoodles"
-        Me.btnProdLuckyMeNoodles.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdLuckyMeNoodles.TabIndex = 23
-        Me.btnProdLuckyMeNoodles.Tag = "INSTANT"
-        Me.btnProdLuckyMeNoodles.Text = "LuckyNoodles ₱18.00"
-        Me.btnProdLuckyMeNoodles.UseVisualStyleBackColor = False
+        Me.ucPhPOS24.ItemName = ""
+        Me.ucPhPOS24.Location = New System.Drawing.Point(544, 232)
+        Me.ucPhPOS24.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS24.Name = "ucPhPOS24"
+        Me.ucPhPOS24.PreviewEnabled = True
+        Me.ucPhPOS24.PreviewText = "Lucky Me Noodles" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱18.00"
+        Me.ucPhPOS24.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS24.ProductId = 0
+        Me.ucPhPOS24.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS24.Stock = 0
+        Me.ucPhPOS24.TabIndex = 23
+        Me.ucPhPOS24.Tag = "PLACEHOLDER_DESIGNONLY"
         '
-        'btnProdLuckyMeCanton
+        'ucPhPOS25
         '
-        Me.btnProdLuckyMeCanton.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
-        Me.btnProdLuckyMeCanton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdLuckyMeCanton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(194, Byte), Integer), CType(CType(27, Byte), Integer))
-        Me.btnProdLuckyMeCanton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(30, Byte), Integer), CType(CType(58, Byte), Integer), CType(CType(112, Byte), Integer))
-        Me.btnProdLuckyMeCanton.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnProdLuckyMeCanton.ForeColor = System.Drawing.Color.White
-        Me.btnProdLuckyMeCanton.Location = New System.Drawing.Point(4, 308)
-        Me.btnProdLuckyMeCanton.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnProdLuckyMeCanton.Name = "btnProdLuckyMeCanton"
-        Me.btnProdLuckyMeCanton.Size = New System.Drawing.Size(103, 68)
-        Me.btnProdLuckyMeCanton.TabIndex = 24
-        Me.btnProdLuckyMeCanton.Tag = "INSTANT"
-        Me.btnProdLuckyMeCanton.Text = "Lucky Me Canton ₱20.00"
-        Me.btnProdLuckyMeCanton.UseVisualStyleBackColor = False
+        Me.ucPhPOS25.ItemName = ""
+        Me.ucPhPOS25.Location = New System.Drawing.Point(4, 308)
+        Me.ucPhPOS25.Margin = New System.Windows.Forms.Padding(4)
+        Me.ucPhPOS25.Name = "ucPhPOS25"
+        Me.ucPhPOS25.PreviewEnabled = True
+        Me.ucPhPOS25.PreviewText = "Lucky Me Pancit Canton" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "₱25.00"
+        Me.ucPhPOS25.Price = New Decimal(New Integer() {0, 0, 0, 0})
+        Me.ucPhPOS25.ProductId = 0
+        Me.ucPhPOS25.Size = New System.Drawing.Size(100, 68)
+        Me.ucPhPOS25.Stock = 0
+        Me.ucPhPOS25.TabIndex = 24
+        Me.ucPhPOS25.Tag = "PLACEHOLDER_DESIGNONLY"
         '
         'FlowLayoutPanel1
         '
@@ -974,12 +943,22 @@ Partial Class frmPOS
         Me.txtSearch.TabIndex = 0
         Me.txtSearch.Text = "Search item name..."
         '
+        'object_1ab29191_8921_45b5_8bec_8dbb7c11c102
+        '
+        Me.object_1ab29191_8921_45b5_8bec_8dbb7c11c102.BackColor = System.Drawing.Color.FromArgb(CType(CType(11, Byte), Integer), CType(CType(27, Byte), Integer), CType(CType(61, Byte), Integer))
+        Me.object_1ab29191_8921_45b5_8bec_8dbb7c11c102.Location = New System.Drawing.Point(731, 46)
+        Me.object_1ab29191_8921_45b5_8bec_8dbb7c11c102.Margin = New System.Windows.Forms.Padding(4)
+        Me.object_1ab29191_8921_45b5_8bec_8dbb7c11c102.Name = "object_1ab29191_8921_45b5_8bec_8dbb7c11c102"
+        Me.object_1ab29191_8921_45b5_8bec_8dbb7c11c102.Size = New System.Drawing.Size(390, 755)
+        Me.object_1ab29191_8921_45b5_8bec_8dbb7c11c102.TabIndex = 2
+        Me.object_1ab29191_8921_45b5_8bec_8dbb7c11c102.Visible = False
+        '
         'frmPOS
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(16, Byte), Integer), CType(CType(42, Byte), Integer), CType(CType(92, Byte), Integer))
-        Me.ClientSize = New System.Drawing.Size(1149, 738)
+        Me.ClientSize = New System.Drawing.Size(1149, 807)
         Me.Controls.Add(Me.pnlProductsContainer)
         Me.Controls.Add(Me.pnlCartContainer)
         Me.Controls.Add(Me.pnlHeader)
@@ -1013,6 +992,7 @@ Partial Class frmPOS
     Friend WithEvents dgvCart As DataGridView
     Friend WithEvents lblCartHeader As Label
     Friend WithEvents btnClose As Button
+    Friend WithEvents btnPendingOrders As Button
     Friend WithEvents btnOpenPayment As Button
     Friend WithEvents pnlProductsContainer As Panel
     Friend WithEvents txtSearch As TextBox
@@ -1024,31 +1004,31 @@ Partial Class frmPOS
     Friend WithEvents btnCatDesserts As Button
     Friend WithEvents btnCatInstant As Button
     Friend WithEvents flpProducts As FlowLayoutPanel
-    Friend WithEvents btnProdAdobo As Button
-    Friend WithEvents btnProdLongganisa As Button
-    Friend WithEvents btnProdSpam As Button
-    Friend WithEvents btnProdShanghai As Button
-    Friend WithEvents btnProdRice As Button
-    Friend WithEvents btnProdSiomaiBig As Button
-    Friend WithEvents btnProdSiomaiSmall As Button
-    Friend WithEvents btnProdSiopao As Button
-    Friend WithEvents btnProdTuron As Button
-    Friend WithEvents btnProdCorndog As Button
-    Friend WithEvents btnProdMineralWater As Button
-    Friend WithEvents btnProdLiptonIceTea As Button
-    Friend WithEvents btnProdMilo As Button
-    Friend WithEvents btnProdKopiko As Button
-    Friend WithEvents btnProdIcedCoffee As Button
-    Friend WithEvents btnProdIceCream As Button
-    Friend WithEvents btnProdFudgeeBar As Button
-    Friend WithEvents btnProdDoweeDonut As Button
-    Friend WithEvents btnProdOreo As Button
-    Friend WithEvents btnProdChocolateCake As Button
-    Friend WithEvents btnProdNoodlesBulalo As Button
-    Friend WithEvents btnProdNoodlesSeafood As Button
-    Friend WithEvents btnProdPancitCanton As Button
-    Friend WithEvents btnProdLuckyMeNoodles As Button
-    Friend WithEvents btnProdLuckyMeCanton As Button
+    Friend WithEvents ucPhPOS1 As ucProductButton
+    Friend WithEvents ucPhPOS2 As ucProductButton
+    Friend WithEvents ucPhPOS3 As ucProductButton
+    Friend WithEvents ucPhPOS4 As ucProductButton
+    Friend WithEvents ucPhPOS5 As ucProductButton
+    Friend WithEvents ucPhPOS6 As ucProductButton
+    Friend WithEvents ucPhPOS7 As ucProductButton
+    Friend WithEvents ucPhPOS8 As ucProductButton
+    Friend WithEvents ucPhPOS9 As ucProductButton
+    Friend WithEvents ucPhPOS10 As ucProductButton
+    Friend WithEvents ucPhPOS11 As ucProductButton
+    Friend WithEvents ucPhPOS12 As ucProductButton
+    Friend WithEvents ucPhPOS13 As ucProductButton
+    Friend WithEvents ucPhPOS14 As ucProductButton
+    Friend WithEvents ucPhPOS15 As ucProductButton
+    Friend WithEvents ucPhPOS16 As ucProductButton
+    Friend WithEvents ucPhPOS17 As ucProductButton
+    Friend WithEvents ucPhPOS18 As ucProductButton
+    Friend WithEvents ucPhPOS19 As ucProductButton
+    Friend WithEvents ucPhPOS20 As ucProductButton
+    Friend WithEvents ucPhPOS21 As ucProductButton
+    Friend WithEvents ucPhPOS22 As ucProductButton
+    Friend WithEvents ucPhPOS23 As ucProductButton
+    Friend WithEvents ucPhPOS24 As ucProductButton
+    Friend WithEvents ucPhPOS25 As ucProductButton
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents rdoCash As RadioButton
     Friend WithEvents colItem As DataGridViewTextBoxColumn
@@ -1066,4 +1046,5 @@ Partial Class frmPOS
     Friend WithEvents txtAmountPaid As TextBox
     Friend WithEvents lblChange As Label
     Friend WithEvents btnLogout As Button
+    Friend WithEvents object_1ab29191_8921_45b5_8bec_8dbb7c11c102 As Panel
 End Class

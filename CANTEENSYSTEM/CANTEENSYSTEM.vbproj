@@ -229,6 +229,45 @@
     <Compile Include="frmSystemSelect.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="frmPinPrompt.Designer.vb">
+      <DependentUpon>frmPinPrompt.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmPinPrompt.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmEditKioskItem.Designer.vb">
+      <DependentUpon>frmEditKioskItem.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmEditKioskItem.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmThemedPrompt.Designer.vb">
+      <DependentUpon>frmThemedPrompt.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmThemedPrompt.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmCategoryPicker.Designer.vb">
+      <DependentUpon>frmCategoryPicker.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmCategoryPicker.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ucProductButton.Designer.vb">
+      <DependentUpon>ucProductButton.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ucProductButton.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AuditLog.vb" />
+    <Compile Include="Navigator.vb" />
+    <Compile Include="DbHelper.vb" />
+    <Compile Include="GridWheel.vb" />
+    <Compile Include="ProductCatalog.vb" />
+    <Compile Include="Session.vb" />
+    <Compile Include="ReportPdf.vb" />
+    <Compile Include="SalaryService.vb" />
+    <Compile Include="TransactionService.vb" />
     <Compile Include="SalesTracker.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">

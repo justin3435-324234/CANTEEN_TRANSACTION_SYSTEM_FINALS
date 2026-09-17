@@ -6,6 +6,13 @@
 -- Generation Time: Aug 28, 2026 at 07:13 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
+--
+-- CANTEEN TRANSACTION SYSTEM — canonical fresh-install dump.
+-- MERGED with Phase0_Patch.sql: the 8 Phase 0 columns are already inside
+-- the CREATE TABLEs below (marked PHASE 0), so ONE import produces the
+-- final schema. Seed data unchanged. For upgrading an EXISTING database,
+-- run Database/Phase0_Patch.sql instead (it is idempotent and safe to
+-- re-run after this file).
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -84,7 +91,7 @@ CREATE TABLE `employees` (
 --
 
 INSERT INTO `employees` (`employee_number`, `username`, `full_name`, `position`, `employee_type`, `status`, `created_at`, `pin`, `deduction_status`, `period_start`, `period_end`) VALUES
-('EMP-001', 'john.doe', 'John Doe', 'Staff', 'Employee', 'Active', '2026-08-27 17:00:00', '1234', 'Pending', NULL, NULL);
+('EMP-001', 'john.doe', 'John Doe', 'Staff', 'Employee', 'Active', '2026-08-27 17:00:00', '1234', 'PENDING', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -97,7 +104,10 @@ CREATE TABLE `kiosk_orders` (
   `order_number` varchar(30) NOT NULL,
   `order_date` datetime NOT NULL DEFAULT current_timestamp(),
   `total_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `status` varchar(20) NOT NULL DEFAULT 'Pending'
+  `status` varchar(20) NOT NULL DEFAULT 'Pending',
+  `order_type` varchar(20) NOT NULL DEFAULT 'DineIn',
+  `payment_method` varchar(20) NOT NULL DEFAULT 'Cash',
+  `employee_number` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -137,31 +147,31 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `product_name`, `category_id`, `price`, `stock_quantity`, `reorder_level`, `status`, `created_at`) VALUES
-(102, 'Adobo', 2, 65.00, 9, 5, 'Active', '2026-08-19 18:35:13'),
-(103, 'Longganisa', 2, 45.00, 19, 5, 'Active', '2026-08-19 18:35:13'),
-(104, 'Spam', 2, 45.00, 19, 5, 'Active', '2026-08-19 18:35:13'),
-(105, 'Shanghai', 2, 20.00, 19, 5, 'Active', '2026-08-19 18:35:13'),
-(106, 'Rice', 2, 15.00, 27, 5, 'Active', '2026-08-19 18:35:13'),
-(107, 'Siomai Big', 3, 10.00, 30, 5, 'Active', '2026-08-19 18:35:13'),
-(108, 'Siomai Small', 3, 6.00, 24, 5, 'Active', '2026-08-19 18:35:13'),
-(109, 'Siopao', 3, 35.00, 15, 5, 'Active', '2026-08-19 18:35:13'),
-(110, 'Turon', 3, 20.00, 29, 5, 'Active', '2026-08-19 18:35:13'),
-(111, 'Corndog', 3, 35.00, 10, 5, 'Active', '2026-08-19 18:35:13'),
+(102, 'Adobo', 2, 65.00, 9, 10, 'Active', '2026-08-19 18:35:13'),
+(103, 'Longganisa', 2, 45.00, 19, 10, 'Active', '2026-08-19 18:35:13'),
+(104, 'Spam', 2, 45.00, 19, 10, 'Active', '2026-08-19 18:35:13'),
+(105, 'Shanghai', 2, 20.00, 19, 10, 'Active', '2026-08-19 18:35:13'),
+(106, 'Rice', 2, 15.00, 27, 10, 'Active', '2026-08-19 18:35:13'),
+(107, 'Siomai Big', 3, 10.00, 30, 10, 'Active', '2026-08-19 18:35:13'),
+(108, 'Siomai Small', 3, 6.00, 24, 10, 'Active', '2026-08-19 18:35:13'),
+(109, 'Siopao', 3, 35.00, 15, 10, 'Active', '2026-08-19 18:35:13'),
+(110, 'Turon', 3, 20.00, 29, 10, 'Active', '2026-08-19 18:35:13'),
+(111, 'Corndog', 3, 35.00, 10, 10, 'Active', '2026-08-19 18:35:13'),
 (112, 'Mineral Water', 4, 15.00, 47, 10, 'Active', '2026-08-19 18:35:13'),
-(113, 'Lipton Ice Tea', 4, 25.00, 19, 5, 'Active', '2026-08-19 18:35:13'),
-(114, 'Milo', 4, 18.00, 28, 5, 'Active', '2026-08-19 18:35:13'),
-(115, 'Kopiko', 4, 18.00, 24, 5, 'Active', '2026-08-19 18:35:13'),
-(116, 'Iced Kopiko', 4, 26.00, 16, 5, 'Active', '2026-08-19 18:35:13'),
-(117, 'Ice Cream', 5, 20.00, 16, 5, 'Active', '2026-08-19 18:35:13'),
-(118, 'Fudgee Bar', 5, 12.00, 24, 5, 'Active', '2026-08-19 18:35:13'),
-(119, 'Dowee Donut', 5, 20.00, 28, 5, 'Active', '2026-08-19 18:35:13'),
-(120, 'Oreo', 5, 12.00, 28, 5, 'Active', '2026-08-19 18:35:13'),
-(121, 'Chocolate Cake', 5, 25.00, 13, 5, 'Active', '2026-08-19 18:35:13'),
-(122, 'Cup Noodles Bulalo', 6, 30.00, 9, 5, 'Active', '2026-08-19 18:35:13'),
-(123, 'Cup Noodles Seafood', 6, 30.00, 10, 5, 'Active', '2026-08-19 18:35:13'),
-(124, 'Pancit Canton', 6, 20.00, 20, 5, 'Active', '2026-08-19 18:35:13'),
-(125, 'Lucky Me Noodles', 6, 18.00, 23, 5, 'Active', '2026-08-19 18:35:13'),
-(126, 'Lucky Me Pancit Canton', 6, 25.00, 21, 5, 'Active', '2026-08-19 18:35:13');
+(113, 'Lipton Ice Tea', 4, 25.00, 19, 10, 'Active', '2026-08-19 18:35:13'),
+(114, 'Milo', 4, 18.00, 28, 10, 'Active', '2026-08-19 18:35:13'),
+(115, 'Kopiko', 4, 18.00, 24, 10, 'Active', '2026-08-19 18:35:13'),
+(116, 'Iced Kopiko', 4, 26.00, 16, 10, 'Active', '2026-08-19 18:35:13'),
+(117, 'Ice Cream', 5, 20.00, 16, 10, 'Active', '2026-08-19 18:35:13'),
+(118, 'Fudgee Bar', 5, 12.00, 24, 10, 'Active', '2026-08-19 18:35:13'),
+(119, 'Dowee Donut', 5, 20.00, 28, 10, 'Active', '2026-08-19 18:35:13'),
+(120, 'Oreo', 5, 12.00, 28, 10, 'Active', '2026-08-19 18:35:13'),
+(121, 'Chocolate Cake', 5, 25.00, 13, 10, 'Active', '2026-08-19 18:35:13'),
+(122, 'Cup Noodles Bulalo', 6, 30.00, 9, 10, 'Active', '2026-08-19 18:35:13'),
+(123, 'Cup Noodles Seafood', 6, 30.00, 10, 10, 'Active', '2026-08-19 18:35:13'),
+(124, 'Pancit Canton', 6, 20.00, 20, 10, 'Active', '2026-08-19 18:35:13'),
+(125, 'Lucky Me Noodles', 6, 18.00, 23, 10, 'Active', '2026-08-19 18:35:13'),
+(126, 'Lucky Me Pancit Canton', 6, 25.00, 21, 10, 'Active', '2026-08-19 18:35:13');
 
 -- --------------------------------------------------------
 
@@ -175,7 +185,7 @@ CREATE TABLE `salary_deductions` (
   `transaction_id` int(11) NOT NULL,
   `deduction_amount` decimal(10,2) NOT NULL,
   `deduction_date` datetime NOT NULL DEFAULT current_timestamp(),
-  `deduction_status` enum('Pending','Deducted','Cancelled') NOT NULL DEFAULT 'Pending',
+  `deduction_status` enum('Pending','Deducted','Cancelled','Settled') NOT NULL DEFAULT 'Pending',
   `remarks` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -207,7 +217,12 @@ CREATE TABLE `transactions` (
   `user_id` int(11) NOT NULL,
   `total_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
   `cash_received` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `change_amount` decimal(10,2) NOT NULL DEFAULT 0.00
+  `change_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `transaction_number` varchar(30) DEFAULT NULL,
+  `payment_method` varchar(20) NOT NULL DEFAULT 'Cash',
+  `status` varchar(20) NOT NULL DEFAULT 'Completed',
+  `employee_number` varchar(50) DEFAULT NULL,
+  `kiosk_order_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -448,6 +463,36 @@ ALTER TABLE `transactions`
 ALTER TABLE `transaction_details`
   ADD CONSTRAINT `fk_details_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_details_transaction` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`transaction_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Triggers: normalize employees.deduction_status to ALL-CAPS on write and
+-- reject anything outside PENDING/COMPLETE. (A CHECK cannot do this: the
+-- column collation is case-insensitive.)
+--
+DELIMITER $$
+DROP TRIGGER IF EXISTS `trg_employees_bi`$$
+CREATE TRIGGER `trg_employees_bi` BEFORE INSERT ON `employees`
+FOR EACH ROW
+BEGIN
+    SET NEW.`deduction_status` = UPPER(TRIM(NEW.`deduction_status`));
+    IF NEW.`deduction_status` NOT IN ('PENDING','COMPLETE') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'employees.deduction_status must be PENDING or COMPLETE';
+    END IF;
+END$$
+DROP TRIGGER IF EXISTS `trg_employees_bu`$$
+CREATE TRIGGER `trg_employees_bu` BEFORE UPDATE ON `employees`
+FOR EACH ROW
+BEGIN
+    SET NEW.`deduction_status` = UPPER(TRIM(NEW.`deduction_status`));
+    IF NEW.`deduction_status` NOT IN ('PENDING','COMPLETE') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'employees.deduction_status must be PENDING or COMPLETE';
+    END IF;
+END$$
+DELIMITER ;
+-- Backstop: normalize any pre-existing rows (e.g. older seeds) now that triggers exist.
+UPDATE `employees` SET `deduction_status` = UPPER(TRIM(`deduction_status`)) WHERE `deduction_status` <> UPPER(TRIM(`deduction_status`));
+-- Low-stock rule: an item is LOW when 0 < stock <= 10 (uniform threshold).
+UPDATE `products` SET `reorder_level` = 10 WHERE `reorder_level` <> 10;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

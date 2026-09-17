@@ -4,10 +4,9 @@ Imports MySql.Data.MySqlClient
 Public Class frmLogin
 
     '=========================================================
-    ' DATABASE CONNECTION
+    ' DATABASE CONNECTION — PHASE 0: canonical string lives in
+    ' DbHelper (App.config <connectionStrings name="CanteenDb">).
     '=========================================================
-    Private connectionString As String =
-        "Server=localhost;Database=school_canteen_db;Uid=root;Pwd=;"
 
     '=========================================================
     ' SELECTED LOGIN ROLE
@@ -19,6 +18,7 @@ Public Class frmLogin
     ' FORM LOAD
     '=========================================================
     Private Sub frmLogin_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True
 
         'Default role = Cashier
         selectedRole = "Cashier"
@@ -138,16 +138,16 @@ Public Class frmLogin
         '-----------------------------------------------------
         Try
 
-            Using conn As New MySqlConnection(connectionString)
+            Using conn As MySqlConnection = DbHelper.GetConnection()
 
                 conn.Open()
 
 
                 '-------------------------------------------------
-                ' FIND USER
+                ' FIND USER (id + fullname needed for Session)
                 '-------------------------------------------------
                 Dim query As String =
-                    "SELECT username, password, role, status " &
+                    "SELECT id, fullname, username, password, role, status " &
                     "FROM users " &
                     "WHERE username = @username " &
                     "LIMIT 1"
@@ -182,6 +182,14 @@ Public Class frmLogin
                         '-------------------------------------------------
                         ' GET DATABASE VALUES
                         '-------------------------------------------------
+                        Dim dbId As Integer = Convert.ToInt32(reader("id"))
+
+                        Dim dbFullName As String =
+                            reader("fullname").ToString()
+
+                        Dim dbUsername As String =
+                            reader("username").ToString()
+
                         Dim dbPassword As String =
                             reader("password").ToString()
 
@@ -259,6 +267,9 @@ Public Class frmLogin
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Information)
 
+                            Session.SetUser(dbId, dbUsername, dbFullName, dbRole)
+                            AuditLog.Log(dbId, "Login", $"{dbUsername} logged in as {dbRole} (POS)")
+
                             Dim posForm As New frmPOS()
 
                             posForm.Show()
@@ -291,6 +302,9 @@ Public Class frmLogin
                                 "Admin Access Granted",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Information)
+
+                            Session.SetUser(dbId, dbUsername, dbFullName, dbRole)
+                            AuditLog.Log(dbId, "Login", $"{dbUsername} logged in as {dbRole} (Dashboard)")
 
                             Dim dashboard As New frmDashboard()
 
@@ -351,7 +365,8 @@ Public Class frmLogin
 
     End Sub
 
+    ' Header X returns to the front door instead of stranding a hidden MainForm.
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        Me.Close()
+        Navigator.ReturnToSystemSelect(Me)
     End Sub
 End Class

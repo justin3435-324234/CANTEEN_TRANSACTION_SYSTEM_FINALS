@@ -1,18 +1,38 @@
 ﻿Imports System.Text
 Imports System.Threading.Tasks
+Imports System.Drawing.Printing
 Imports MySql.Data.MySqlClient
 
 Public Class frmPOS
 
-    Private connectionString As String =
-        "Server=localhost;Database=school_canteen_db;Uid=root;Pwd=;"
+    ' Flicker-free child painting (product grid rebuilds + cart repaints).
+    Protected Overrides ReadOnly Property CreateParams As CreateParams
+        Get
+            Dim cp As CreateParams = MyBase.CreateParams
+            cp.ExStyle = cp.ExStyle Or &H2000000 ' WS_EX_COMPOSITED
+            Return cp
+        End Get
+    End Property
+
+    ' PHASE 0: connection string lives in DbHelper (App.config). Do not hardcode here.
 
     Private activeCatButton As Button = Nothing
+    Private currentCategoryKey As String = "ALL"
     Private Const SEARCH_PLACEHOLDER As String = "Search item name..."
+
+    ' PHASE 4: kiosk order currently being processed (0 = walk-in sale).
+    Private processingKioskOrderId As Integer = 0
+    Private kioskOrderNumber As String = ""
+    Private kioskOrderEmpNo As String = ""
+    Private kioskOrderEmpName As String = ""
+    Private kioskOrderEmpPosition As String = ""
 
 #Region "Form Load & Search Placeholder Events"
 
     Private Sub frmPOS_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Me.DoubleBuffered = True ' smoothens cart/button repaints
+        ExpandCartArea()
+        LockPosCartGrid()
         Me.KeyPreview = True
         ConfigureProductButtons()
         dgvCart.Rows.Clear()
@@ -30,34 +50,215 @@ Public Class frmPOS
         Else
             txtAmountPaid.Enabled = True
         End If
+
+        ' POS runs at its designed size, centered (REVERTED: maximizing left
+        ' fixed-position inner controls bunched with empty voids).
+        Me.StartPosition = FormStartPosition.CenterScreen
+
+        ' PHASE 4: one-click entry to pending kiosk orders (also F6).
+        ' (Designer-visible: btnPendingOrders lives in frmPOS.Designer.vb)
+        If btnPendingOrders IsNot Nothing Then btnPendingOrders.BringToFront()
     End Sub
 
+    Private Sub btnPendingOrders_Click(sender As Object, e As EventArgs) Handles btnPendingOrders.Click
+        OpenPendingOrders()
+    End Sub
+
+    Private Sub OpenPendingOrders(sender As Object, e As EventArgs)
+        OpenPendingOrders()
+    End Sub
+
+    Private Sub OpenPendingOrders()
+        For Each f As Form In Application.OpenForms
+            If TypeOf f Is frmPendingOrders Then
+                CType(f, frmPendingOrders).RefreshOrders()
+                f.BringToFront()
+                f.Focus()
+                Exit Sub
+            End If
+        Next
+        Dim pending As New frmPendingOrders()
+        pending.Show()
+    End Sub
+
+    ' PHASE 4: receive a kiosk order for counter payment. Payment here
+    ' completes the order atomically (see TransactionService.Checkout).
+    Public Sub LoadKioskOrder(orderId As Integer, orderNumber As String, lines As List(Of TransactionService.CartLine), payMethod As String, empNumber As String)
+        ClearKioskState()
+        dgvCart.Rows.Clear()
+        For Each ln In lines
+            Dim idx As Integer = dgvCart.Rows.Add(ln.ProductName, ln.Quantity, ln.UnitPrice, ln.Subtotal, "❌")
+            If idx >= 0 Then dgvCart.Rows(idx).Tag = ln.ProductId
+        Next
+        processingKioskOrderId = orderId
+        kioskOrderNumber = If(orderNumber, "")
+        kioskOrderEmpNo = If(empNumber, "")
+        kioskOrderEmpName = ""
+        kioskOrderEmpPosition = ""
+        If Not String.IsNullOrWhiteSpace(kioskOrderEmpNo) Then
+            Try
+                Using conn As MySqlConnection = DbHelper.GetConnection()
+                    conn.Open()
+                    Using cmd As New MySqlCommand("SELECT full_name, position FROM employees WHERE employee_number=@e LIMIT 1", conn)
+                        cmd.Parameters.AddWithValue("@e", kioskOrderEmpNo)
+                        Using rdr As MySqlDataReader = cmd.ExecuteReader()
+                            If rdr.Read() Then
+                                kioskOrderEmpName = rdr("full_name").ToString()
+                                kioskOrderEmpPosition = rdr("position").ToString()
+                            End If
+                        End Using
+                    End Using
+                End Using
+            Catch ex As Exception
+                Debug.WriteLine("LoadKioskOrder employee lookup failed: " & ex.Message)
+            End Try
+        End If
+        If TransactionService.IsSalaryPayment(payMethod) Then
+            rdoSalaryDeduction.Checked = True
+        Else
+            rdoCash.Checked = True
+        End If
+        UpdateGrandTotal()
+        ' NOTE: no MessageBox here — the filled cart + KIOSK REF on the coming
+        ' receipt are the confirmation (also keeps this automation-friendly).
+    End Sub
+
+    Private Sub ClearKioskState()
+        processingKioskOrderId = 0
+        kioskOrderNumber = ""
+        kioskOrderEmpNo = ""
+        kioskOrderEmpName = ""
+        kioskOrderEmpPosition = ""
+    End Sub
+
+    ' Status snapshot for a kiosk-authenticated employee (skips re-auth at POS).
+    Private Sub LoadKioskEmployeeBalance(empNumber As String, ByRef empStatus As String, ByRef deductionStatus As String)
+        empStatus = "Active"
+        deductionStatus = "PENDING"
+        Try
+            Using conn As MySqlConnection = DbHelper.GetConnection()
+                conn.Open()
+                Using cmd As New MySqlCommand("SELECT status, deduction_status FROM employees WHERE employee_number=@e LIMIT 1", conn)
+                    cmd.Parameters.AddWithValue("@e", empNumber)
+                    Using rdr As MySqlDataReader = cmd.ExecuteReader()
+                        If rdr.Read() Then
+                            If rdr("status") IsNot DBNull.Value Then empStatus = rdr("status").ToString()
+                            If rdr("deduction_status") IsNot DBNull.Value Then deductionStatus = rdr("deduction_status").ToString().Trim().ToUpper()
+                        End If
+                    End Using
+                End Using
+            End Using
+        Catch ex As Exception
+            Debug.WriteLine("LoadKioskEmployeeBalance failed: " & ex.Message)
+        End Try
+    End Sub
+
+    ' The summary grid clipped its columns at design width: grow the window
+    ' rightward and hand ALL extra room to the cart side (Designer untouched).
+    Private CartExtraWidth As Integer = 0
+
+    Private Sub ExpandCartArea()
+        Try
+            Const dw As Integer = 120
+            CartExtraWidth = dw
+            Me.ClientSize = New Size(Me.ClientSize.Width + dw, Me.ClientSize.Height)
+            If pnlHeader IsNot Nothing Then pnlHeader.Width = Me.ClientSize.Width
+            If pnlCartContainer IsNot Nothing Then pnlCartContainer.Width += dw
+            If dgvCart IsNot Nothing Then dgvCart.Width += dw
+            If btnClose IsNot Nothing Then btnClose.Left += dw
+            ' Center the fixed-width payment column in the widened cart panel.
+            CenterCartControls()
+            Me.CenterToScreen()
+        Catch ex As Exception
+            Debug.WriteLine("ExpandCartArea failed: " & ex.Message)
+        End Try
+    End Sub
+
+    Private Sub CenterCartControls()
+        Try
+            If pnlCartContainer Is Nothing Then Exit Sub
+            Dim centered As Control() = {GroupBox1, GroupBox2, Panel1, btnOpenPayment, btnCancelPayment, btnLogout, btnPendingOrders, lblCartHeader}
+            For Each c As Control In centered
+                If c IsNot Nothing Then c.Left = (pnlCartContainer.Width - c.Width) \ 2
+            Next
+        Catch ex As Exception
+            Debug.WriteLine("CenterCartControls failed: " & ex.Message)
+        End Try
+    End Sub
+
+    ' Cart cells are display-only: prices/qty change through code, never typing.
+    Private Sub LockPosCartGrid()
+        Try
+            If dgvCart Is Nothing Then Exit Sub
+            For Each c As DataGridViewColumn In dgvCart.Columns
+                If TypeOf c Is DataGridViewTextBoxColumn Then c.ReadOnly = True
+            Next
+        Catch ex As Exception
+            Debug.WriteLine("LockPosCartGrid failed: " & ex.Message)
+        End Try
+    End Sub
+
+    ' PHASE 2: menu comes from the database (ProductCatalog). Anything added,
+    ' edited, deactivated, or stocked-out in Inventory is reflected here.
     Private Sub ConfigureProductButtons()
-        btnProdAdobo.Text = "Chicken Adobo" & vbCrLf & "₱65.00"
-        btnProdLongganisa.Text = "Longganisa" & vbCrLf & "₱45.00"
-        btnProdSpam.Text = "Spam" & vbCrLf & "₱45.00"
-        btnProdShanghai.Text = "Shanghai" & vbCrLf & "₱20.00"
-        btnProdRice.Text = "Rice" & vbCrLf & "₱15.00"
-        btnProdSiomaiBig.Text = "SIOMAI BIG " & vbCrLf & "₱10.00"
-        btnProdSiomaiSmall.Text = "SIOMAI SMALL" & vbCrLf & "₱6.00"
-        btnProdSiopao.Text = "SIOPAO" & vbCrLf & "₱25.00"
-        btnProdTuron.Text = "Turon" & vbCrLf & "₱15.00"
-        btnProdCorndog.Text = "Corndog" & vbTab & "₱25.00"
-        btnProdMineralWater.Text = "MINERAL" & vbCrLf & "₱15.00"
-        btnProdLiptonIceTea.Text = "LIPTON" & vbCrLf & "₱30.00"
-        btnProdMilo.Text = "MILO" & vbCrLf & "₱18.00"
-        btnProdKopiko.Text = "KOPIKO" & vbCrLf & "₱18.00"
-        btnProdIcedCoffee.Text = "ICED KOPIKO" & vbCrLf & "₱26.00"
-        btnProdIceCream.Text = "Ice Cream" & vbTab & vbCrLf & "₱20.00"
-        btnProdFudgeeBar.Text = "Fudgee Bar" & vbCrLf & "₱12.00"
-        btnProdDoweeDonut.Text = "Dowee Donut" & vbCrLf & "₱15.00"
-        btnProdOreo.Text = "Oreo" & vbCrLf & "₱12.00"
-        btnProdChocolateCake.Text = "Chocolate Cake" & vbTab & "₱25.00"
-        btnProdNoodlesBulalo.Text = "Noodles Bulalo" & vbTab & "₱30.00"
-        btnProdNoodlesSeafood.Text = "Noodles Seafood" & vbTab & "₱30.00"
-        btnProdPancitCanton.Text = "Pancit Canton" & vbTab & "₱20.00"
-        btnProdLuckyMeNoodles.Text = "LuckyNoodles" & vbTab & "₱18.00"
-        btnProdLuckyMeCanton.Text = "Lucky Me Canton" & vbTab & "₱20.00"
+        LoadDynamicProducts()
+    End Sub
+
+    Public Sub LoadDynamicProducts()
+        flpProducts.SuspendLayout()
+        ' Drop design-time placeholders (Designer-visible samples).
+        For Each ph In flpProducts.Controls.OfType(Of Button)().Where(Function(b) CStr(b.Tag) = "PLACEHOLDER_DESIGNONLY").ToList()
+            flpProducts.Controls.Remove(ph)
+            ph.Dispose()
+        Next
+        ' Drop UserControl product cards (Phase C) on refresh.
+        For Each uc In flpProducts.Controls.OfType(Of ucProductButton)().ToList()
+            RemoveHandler uc.CardClicked, AddressOf DynamicProductCard_Click
+            flpProducts.Controls.Remove(uc)
+            uc.Dispose()
+        Next
+        ' Drop legacy static catalog buttons (Designer leftovers, if still present).
+        For Each oldBtn In flpProducts.Controls.OfType(Of Button)().Where(Function(b) b.Name.StartsWith("btnProd")).ToList()
+            RemoveHandler oldBtn.Click, AddressOf DynamicProductButton_Click
+            flpProducts.Controls.Remove(oldBtn)
+            oldBtn.Dispose()
+        Next
+        ' Drop previously generated buttons on refresh.
+        For Each dyn In flpProducts.Controls.OfType(Of Button)().Where(Function(b) b.Name.StartsWith("dynProd_")).ToList()
+            RemoveHandler dyn.Click, AddressOf DynamicProductButton_Click
+            flpProducts.Controls.Remove(dyn)
+            dyn.Dispose()
+        Next
+
+        For Each item In ProductCatalog.GetActiveProducts()
+            Dim c As New ucProductButton()
+            c.Bind(item)
+            c.Size = New Size(100, 68)
+            c.Margin = New Padding(4)
+            c.Cursor = Cursors.Hand
+            AddHandler c.CardClicked, AddressOf DynamicProductCard_Click
+            flpProducts.Controls.Add(c)
+        Next
+        flpProducts.ResumeLayout(True)
+
+        ApplyButtonHoverEffects()
+        FilterProducts(currentCategoryKey, activeCatButton)
+    End Sub
+
+    Private Sub DynamicProductButton_Click(sender As Object, e As EventArgs)
+        Dim b As Button = TryCast(sender, Button)
+        Dim item As ProductCatalog.ProductItem = TryCast(If(b IsNot Nothing, b.Tag, Nothing), ProductCatalog.ProductItem)
+        If item Is Nothing OrElse item.IsOutOfStock Then Exit Sub
+        AddToCart(item.ProductId, item.ProductName, item.Price)
+    End Sub
+
+    ' Phase C: UserControl card click forwards the bound ProductItem.
+    Private Sub DynamicProductCard_Click(sender As Object, e As EventArgs)
+        Dim uc As ucProductButton = TryCast(sender, ucProductButton)
+        If uc Is Nothing OrElse uc.BoundItem Is Nothing Then Exit Sub
+        Dim item As ProductCatalog.ProductItem = uc.BoundItem
+        If item.IsOutOfStock Then Exit Sub
+        AddToCart(item.ProductId, item.ProductName, item.Price)
     End Sub
 
     Private Sub ResetSearchPlaceholder()
@@ -90,7 +291,7 @@ Public Class frmPOS
 
     Private Sub ApplyButtonHoverEffects()
         For Each ctrl As Control In flpProducts.Controls
-            If TypeOf ctrl Is Button Then
+            If TypeOf ctrl Is Button OrElse TypeOf ctrl Is ucProductButton Then
                 ctrl.Cursor = Cursors.Hand
             End If
         Next
@@ -159,6 +360,9 @@ Public Class frmPOS
             Case Keys.F5
                 btnOpenPayment.PerformClick()
                 Return True
+            Case Keys.F6
+                OpenPendingOrders()
+                Return True
         End Select
         Return MyBase.ProcessCmdKey(msg, keyData)
     End Function
@@ -169,19 +373,20 @@ Public Class frmPOS
 
     Private Sub FilterProducts(categoryTag As String, clickedBtn As Button)
         SetActiveCategoryButton(clickedBtn)
+        currentCategoryKey = If(String.IsNullOrWhiteSpace(categoryTag), "ALL", categoryTag)
 
         flpProducts.SuspendLayout()
         For Each ctrl As Control In flpProducts.Controls
-            If TypeOf ctrl Is Button AndAlso ctrl.Name.StartsWith("btnProd") Then
-                Dim btnTag As String = If(ctrl.Tag IsNot Nothing, ctrl.Tag.ToString().ToUpper(), "")
-                Dim filterTag As String = categoryTag.ToUpper()
-
-                If filterTag = "ALL" OrElse btnTag = filterTag OrElse (filterTag.StartsWith("DESSERT") AndAlso btnTag.StartsWith("DESSERT")) Then
-                    ctrl.Visible = True
-                Else
-                    ctrl.Visible = False
-                End If
+            Dim uc As ucProductButton = TryCast(ctrl, ucProductButton)
+            If uc IsNot Nothing Then
+                If uc.BoundItem IsNot Nothing Then uc.Visible = ProductCatalog.MatchesCategory(uc.BoundItem.CategoryName, currentCategoryKey)
+                Continue For
             End If
+            Dim b As Button = TryCast(ctrl, Button)
+            If b Is Nothing Then Continue For
+            Dim item As ProductCatalog.ProductItem = TryCast(b.Tag, ProductCatalog.ProductItem)
+            If item Is Nothing Then Continue For ' skip non-product buttons
+            b.Visible = ProductCatalog.MatchesCategory(item.CategoryName, currentCategoryKey)
         Next
         flpProducts.ResumeLayout()
     End Sub
@@ -194,13 +399,20 @@ Public Class frmPOS
 
         flpProducts.SuspendLayout()
         For Each ctrl As Control In flpProducts.Controls
-            If TypeOf ctrl Is Button AndAlso ctrl.Name.StartsWith("btnProd") Then
-                If String.IsNullOrEmpty(searchText) OrElse ctrl.Text.ToLower().Contains(searchText) Then
-                    ctrl.Visible = True
-                Else
-                    ctrl.Visible = False
+            Dim uc As ucProductButton = TryCast(ctrl, ucProductButton)
+            If uc IsNot Nothing Then
+                If uc.BoundItem IsNot Nothing Then
+                    Dim m2 As Boolean = String.IsNullOrEmpty(searchText) OrElse uc.BoundItem.ProductName.ToLower().Contains(searchText)
+                    uc.Visible = m2 AndAlso ProductCatalog.MatchesCategory(uc.BoundItem.CategoryName, currentCategoryKey)
                 End If
+                Continue For
             End If
+            Dim b As Button = TryCast(ctrl, Button)
+            If b Is Nothing Then Continue For
+            Dim item As ProductCatalog.ProductItem = TryCast(b.Tag, ProductCatalog.ProductItem)
+            If item Is Nothing Then Continue For
+            Dim matchesSearch As Boolean = String.IsNullOrEmpty(searchText) OrElse item.ProductName.ToLower().Contains(searchText)
+            b.Visible = matchesSearch AndAlso ProductCatalog.MatchesCategory(item.CategoryName, currentCategoryKey)
         Next
         flpProducts.ResumeLayout()
     End Sub
@@ -233,7 +445,12 @@ Public Class frmPOS
 
 #Region "Cart Core Operations & Visual Highlight"
 
+    ' PHASE 2: product_id travels with each cart row (row.Tag) for Phase 3 checkout.
     Private Sub AddToCart(itemName As String, price As Decimal)
+        AddToCart(0, itemName, price)
+    End Sub
+
+    Private Sub AddToCart(productId As Integer, itemName As String, price As Decimal)
         Dim itemFound As Boolean = False
         Dim targetRowIndex As Integer = -1
 
@@ -255,6 +472,7 @@ Public Class frmPOS
 
         If Not itemFound Then
             targetRowIndex = dgvCart.Rows.Add(itemName, 1, price, price, "❌")
+            If targetRowIndex >= 0 Then dgvCart.Rows(targetRowIndex).Tag = productId
         End If
 
         If targetRowIndex >= 0 Then
@@ -315,112 +533,10 @@ Public Class frmPOS
 
 #End Region
 
-#Region "Product Button Clicks"
+#Region "Product Button Clicks (PHASE 2: dynamic — see LoadDynamicProducts)"
 
-    ' --- MEALS / ULAM ---
-    Private Sub btnProdAdobo_Click(sender As Object, e As EventArgs) Handles btnProdAdobo.Click
-        AddToCart("Adobo", 65.0)
-    End Sub
-
-    Private Sub btnProdLongganisa_Click(sender As Object, e As EventArgs) Handles btnProdLongganisa.Click
-        AddToCart("Longganisa", 45.0)
-    End Sub
-
-    Private Sub btnProdSpam_Click(sender As Object, e As EventArgs) Handles btnProdSpam.Click
-        AddToCart("Spam", 45.0)
-    End Sub
-
-    Private Sub btnProdShanghai_Click(sender As Object, e As EventArgs) Handles btnProdShanghai.Click
-        AddToCart("Shanghai", 20.0)
-    End Sub
-
-    Private Sub btnProdRice_Click(sender As Object, e As EventArgs) Handles btnProdRice.Click
-        AddToCart("Rice", 15.0)
-    End Sub
-
-    ' --- SNACKS ---
-    Private Sub btnProdSiomaiBig_Click(sender As Object, e As EventArgs) Handles btnProdSiomaiBig.Click
-        AddToCart("Siomai Big", 10.0)
-    End Sub
-
-    Private Sub btnProdSiomaiSmall_Click(sender As Object, e As EventArgs) Handles btnProdSiomaiSmall.Click
-        AddToCart("Siomai Small", 6.0)
-    End Sub
-
-    Private Sub btnProdSiopao_Click(sender As Object, e As EventArgs) Handles btnProdSiopao.Click
-        AddToCart("Siopao", 25.0)
-    End Sub
-
-    Private Sub btnProdTuron_Click(sender As Object, e As EventArgs) Handles btnProdTuron.Click
-        AddToCart("Turon", 15.0)
-    End Sub
-
-    Private Sub btnProdCorndog_Click(sender As Object, e As EventArgs) Handles btnProdCorndog.Click
-        AddToCart("Corndog", 25.0)
-    End Sub
-
-    ' --- DRINKS ---
-    Private Sub btnProdMineralWater_Click(sender As Object, e As EventArgs) Handles btnProdMineralWater.Click
-        AddToCart("Mineral Water", 15.0)
-    End Sub
-
-    Private Sub btnProdLiptonIceTea_Click(sender As Object, e As EventArgs) Handles btnProdLiptonIceTea.Click
-        AddToCart("Lipton Ice Tea", 30.0)
-    End Sub
-
-    Private Sub btnProdMilo_Click(sender As Object, e As EventArgs) Handles btnProdMilo.Click
-        AddToCart("Milo", 18.0)
-    End Sub
-
-    Private Sub btnProdKopiko_Click(sender As Object, e As EventArgs) Handles btnProdKopiko.Click
-        AddToCart("Kopiko", 18.0)
-    End Sub
-
-    Private Sub btnProdIcedCoffee_Click(sender As Object, e As EventArgs) Handles btnProdIcedCoffee.Click
-        AddToCart("Iced Kopiko", 26.0)
-    End Sub
-
-    ' --- DESSERTS ---
-    Private Sub btnProdIceCream_Click(sender As Object, e As EventArgs) Handles btnProdIceCream.Click
-        AddToCart("Ice Cream", 20.0)
-    End Sub
-
-    Private Sub btnProdFudgeeBar_Click(sender As Object, e As EventArgs) Handles btnProdFudgeeBar.Click
-        AddToCart("Fudgee Bar", 12.0)
-    End Sub
-
-    Private Sub btnProdDoweeDonut_Click(sender As Object, e As EventArgs) Handles btnProdDoweeDonut.Click
-        AddToCart("Dowee Donut", 15.0)
-    End Sub
-
-    Private Sub btnProdOreo_Click(sender As Object, e As EventArgs) Handles btnProdOreo.Click
-        AddToCart("Oreo", 12.0)
-    End Sub
-
-    Private Sub btnProdChocolateCake_Click(sender As Object, e As EventArgs) Handles btnProdChocolateCake.Click
-        AddToCart("Chocolate Cake", 25.0)
-    End Sub
-
-    ' --- INSTANT FOOD ---
-    Private Sub btnProdNoodlesBulalo_Click(sender As Object, e As EventArgs) Handles btnProdNoodlesBulalo.Click
-        AddToCart("Cup Noodles Bulalo", 30.0)
-    End Sub
-
-    Private Sub btnProdNoodlesSeafood_Click(sender As Object, e As EventArgs) Handles btnProdNoodlesSeafood.Click
-        AddToCart("Cup Noodles Seafood", 30.0)
-    End Sub
-
-    Private Sub btnProdPancitCanton_Click(sender As Object, e As EventArgs) Handles btnProdPancitCanton.Click
-        AddToCart("Pancit Canton", 20.0)
-    End Sub
-
-    Private Sub btnProdLuckyMeNoodles_Click(sender As Object, e As EventArgs) Handles btnProdLuckyMeNoodles.Click
-        AddToCart("Lucky Me Noodles", 18.0)
-    End Sub
-
-    Private Sub btnProdLuckyMeCanton_Click(sender As Object, e As EventArgs) Handles btnProdLuckyMeCanton.Click
-        AddToCart("Lucky Me Pancit Canton", 25.0)
-    End Sub
+    ' Legacy static handlers removed. Product buttons are generated at runtime
+    ' from ProductCatalog.GetActiveProducts() and share DynamicProductButton_Click.
 
 #End Region
 
@@ -457,10 +573,10 @@ Public Class frmPOS
         Dim empName As String = ""
         Dim empPosition As String = ""
         Dim empNo As String = ""
-        Dim sdRemaining As Decimal = 2500
         Dim empStatus As String = "Available"
         Dim deductionStatus As String = "PENDING" ' Default to PENDING
         Dim signupUsername As String = ""
+        Dim isNewEmployee As Boolean = False
 
         ' Calculate grand total once
         Dim grandTotal As Decimal = 0
@@ -468,6 +584,17 @@ Public Class frmPOS
 
         If rdoSalaryDeduction.Checked Then
             paymentMethod = "Salary Deduction"
+
+            ' PHASE 4: kiosk orders arrive with the employee already authenticated
+            ' at the kiosk — reuse that identity instead of asking again.
+            If processingKioskOrderId > 0 AndAlso Not String.IsNullOrWhiteSpace(kioskOrderEmpNo) Then
+                empNo = kioskOrderEmpNo
+                empName = kioskOrderEmpName
+                empPosition = kioskOrderEmpPosition
+                LoadKioskEmployeeBalance(empNo, empStatus, deductionStatus)
+                empID = empNo & " - " & empName
+                isNewEmployee = False
+            Else
 
             ' Step 1: Ask if new employee
             Dim isNewResult As DialogResult = MessageBox.Show("Are you a new employee for salary deduction?", "New Employee?", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
@@ -481,16 +608,16 @@ Public Class frmPOS
                     empName = signupForm.FullName
                     empPosition = signupForm.Position
                     Try
-                        System.IO.File.AppendAllText("C:\Users\Justin\Desktop\CANTEEN_TRANSACTION_MANAGEMENT_SYSTEM\debug_signup.log", $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} POS after dialog empNo='{empNo}' signupUsername='{signupUsername}' UsernameProp='{signupForm.Username}' EmpNoProp='{signupForm.EmployeeNumber}'" & vbCrLf)
+                        System.IO.File.AppendAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "canteen_debug_signup.log"), $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} POS after dialog empNo='{empNo}' signupUsername='{signupUsername}' UsernameProp='{signupForm.Username}' EmpNoProp='{signupForm.EmployeeNumber}'" & vbCrLf)
                     Catch
                     End Try
 
                     ' Set default values for new employee
-                    sdRemaining = 2500
                     empStatus = "Available"
-                    deductionStatus = "Active"
+                    deductionStatus = "PENDING"
 
                     empID = empNo & " - " & empName
+                    isNewEmployee = True
                 Else
                     PlaySoftSound("error")
                     MessageBox.Show("Registration cancelled.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -503,10 +630,10 @@ Public Class frmPOS
                     empNo = loginForm.EmployeeNumber
                     empName = loginForm.EmployeeName
                     empPosition = loginForm.EmployeePosition
-                    sdRemaining = loginForm.EmployeeSDRemaining
                     empStatus = loginForm.EmployeeStatus
                     deductionStatus = loginForm.EmployeeDeductionStatus
                     empID = empNo & " - " & empName
+                    isNewEmployee = False
                 Else
                     PlaySoftSound("error")
                     MessageBox.Show("Login cancelled or invalid credentials.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -514,43 +641,7 @@ Public Class frmPOS
                 End If
             End If
 
-            ' Deduct grand total from SD Remaining for salary deduction
-            sdRemaining = sdRemaining - grandTotal
-            If sdRemaining < 0 Then sdRemaining = 0
-
-            ' Add new employee to persistent storage (if new employee signup)
-            If isNewResult = DialogResult.Yes AndAlso Not String.IsNullOrWhiteSpace(empNo) Then
-                Try
-                    System.IO.File.AppendAllText("C:\Users\Justin\Desktop\CANTEEN_TRANSACTION_MANAGEMENT_SYSTEM\debug_signup.log", $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} POS before AddEmployee empNo='{empNo}' signupUsername='{signupUsername}' empName='{empName}'" & vbCrLf)
-                Catch
-                End Try
-                If String.IsNullOrWhiteSpace(signupUsername) Then signupUsername = empNo
-                SalesTracker.AddEmployee(empNo, signupUsername, empName, empPosition, sdRemaining, empStatus, deductionStatus)
-
-                ' Also add to open Dashboard if available
-                For Each f As Form In Application.OpenForms
-                    If TypeOf f Is frmDashboard Then
-                        CType(f, frmDashboard).AddEmployee(empNo, signupUsername, empName, empPosition, sdRemaining, empStatus, deductionStatus)
-                        Exit For
-                    End If
-                Next
-            Else
-                ' Update existing employee's SD Remaining
-                For Each emp As SalesTracker.Employee In SalesTracker.Employees
-                    If emp.EmpNo = empNo Then
-                        emp.SDRemaining = sdRemaining
-                        Exit For
-                    End If
-                Next
-                SalesTracker.UpdateSDRemaining(empNo, sdRemaining)
-                ' Update Dashboard if open
-                For Each f As Form In Application.OpenForms
-                    If TypeOf f Is frmDashboard Then
-                        CType(f, frmDashboard).LoadEmployees()
-                        Exit For
-                    End If
-                Next
-            End If
+            End If ' end PHASE 4 kiosk-identity skip
         Else
             paymentMethod = "Cash"
         End If
@@ -565,98 +656,133 @@ Public Class frmPOS
             End If
         End If
 
-        Dim receiptText As String = GenerateReceipt(paymentMethod, empID, empNo, empName, empPosition, sdRemaining, empStatus, deductionStatus, amountPaid)
+        ' ---- PHASE 3: build checkout lines (product_id from row.Tag) ----
+        Dim lines As New List(Of TransactionService.CartLine)
+        For Each row As DataGridViewRow In dgvCart.Rows
+            If row.Cells("colItem").Value Is Nothing Then Continue For
+            Dim pid As Integer = 0
+            If row.Tag IsNot Nothing Then Integer.TryParse(row.Tag.ToString(), pid)
+            If pid <= 0 Then pid = ResolveProductId(row.Cells("colItem").Value.ToString())
+            Dim qty As Integer = 0
+            Integer.TryParse(row.Cells("colQty").Value.ToString(), qty)
+            Dim price As Decimal = 0
+            Decimal.TryParse(row.Cells("colPrice").Value.ToString(), price)
+            Dim cl As New TransactionService.CartLine With {
+                .ProductId = pid,
+                .ProductName = row.Cells("colItem").Value.ToString(),
+                .Quantity = qty,
+                .UnitPrice = price
+            }
+            lines.Add(cl)
+        Next
+        If lines.Count = 0 Then
+            PlaySoftSound("error")
+            MessageBox.Show("No selected product.", "Empty Cart", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim stockCheck As TransactionService.CheckoutResult = TransactionService.ValidateStock(lines)
+        If Not stockCheck.Success Then
+            PlaySoftSound("error")
+            MessageBox.Show(stockCheck.Message, "Cannot Complete Sale", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim changeAmount As Decimal = 0
+        If paymentMethod.ToLower().Contains("cash") Then changeAmount = amountPaid - grandTotal
+
+        btnOpenPayment.Enabled = False ' double-click guard during commit
+        ' PHASE 4: a kiosk order id completes atomically with the sale (0 = walk-in).
+        Dim result As TransactionService.CheckoutResult = TransactionService.Checkout(lines, paymentMethod, amountPaid, changeAmount, empNo, processingKioskOrderId)
+        btnOpenPayment.Enabled = True
+
+        If Not result.Success Then
+            PlaySoftSound("error")
+            MessageBox.Show("Sale failed and was rolled back (nothing was saved):" & vbCrLf & vbCrLf & result.Message, "Checkout Failed", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Exit Sub
+        End If
+
+        ' ---- Salary side-effects, only after a committed sale ----
+        If TransactionService.IsSalaryPayment(paymentMethod) AndAlso Not String.IsNullOrWhiteSpace(empNo) Then
+            If isNewEmployee Then
+                Try
+                    System.IO.File.AppendAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "canteen_debug_signup.log"), $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} POS after committed sale AddEmployee empNo='{empNo}' signupUsername='{signupUsername}' empName='{empName}'" & vbCrLf)
+                Catch
+                End Try
+                If String.IsNullOrWhiteSpace(signupUsername) Then signupUsername = empNo
+                SalesTracker.AddEmployee(empNo, signupUsername, empName, empPosition, empStatus, deductionStatus)
+                For Each f As Form In Application.OpenForms
+                    If TypeOf f Is frmDashboard Then
+                        CType(f, frmDashboard).AddEmployee(empNo, signupUsername, empName, empPosition, empStatus, deductionStatus)
+                        Exit For
+                    End If
+                Next
+            Else
+                For Each f As Form In Application.OpenForms
+                    If TypeOf f Is frmDashboard Then
+                        CType(f, frmDashboard).LoadEmployees()
+                        Exit For
+                    End If
+                Next
+            End If
+        End If
+
+        Dim cashierName As String = ""
+        Try
+            cashierName = Session.CurrentUsername
+        Catch
+        End Try
+        Dim receiptText As String = GenerateReceipt(paymentMethod, empID, empNo, empName, empPosition, empStatus, deductionStatus, amountPaid, result.TransactionNumber, cashierName, kioskOrderNumber)
 
         PlaySoftSound("success")
         MessageBox.Show(receiptText, "CANTEEN OFFICIAL RECEIPT", MessageBoxButtons.OK, MessageBoxIcon.Information)
-
-        UpdateProductStock()
+        If MessageBox.Show("Print this receipt?", "Print Receipt", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
+            PrintReceiptText(receiptText, result.TransactionNumber)
+        End If
 
         Dim saleTotal As Decimal = 0
         Dim saleItems As Integer = 0
-        For Each row As DataGridViewRow In dgvCart.Rows
-            If row.Cells("colItem").Value IsNot Nothing Then
-                saleTotal += Convert.ToDecimal(row.Cells("colSubtotal").Value)
-                saleItems += Convert.ToInt32(row.Cells("colQty").Value)
-            End If
+        For Each ln In lines
+            saleTotal += ln.Subtotal
+            saleItems += ln.Quantity
         Next
         SalesTracker.RecordSale(saleTotal, saleItems)
 
+        ClearKioskState()
         dgvCart.Rows.Clear()
         UpdateGrandTotal()
         ResetSearchPlaceholder()
     End Sub
 
-    Private Sub UpdateProductStock()
+    ' Fallback for cart rows created before product_id tracking (row.Tag = 0).
+    Private Function ResolveProductId(productName As String) As Integer
         Try
-            Using conn As New MySqlConnection(connectionString)
+            Using conn As MySqlConnection = DbHelper.GetConnection()
                 conn.Open()
-
-                For Each row As DataGridViewRow In dgvCart.Rows
-                    If row.Cells("colItem").Value IsNot Nothing Then
-                        Dim itemName As String = row.Cells("colItem").Value.ToString()
-                        Dim qty As Integer = Convert.ToInt32(row.Cells("colQty").Value)
-
-                        Dim query As String =
-                            "UPDATE products SET stock_quantity = stock_quantity - @qty " &
-                            "WHERE product_name = @name"
-
-                        Using cmd As New MySqlCommand(query, conn)
-                            cmd.Parameters.AddWithValue("@qty", qty)
-                            cmd.Parameters.AddWithValue("@name", itemName)
-                            cmd.ExecuteNonQuery()
-                        End Using
-                    End If
-                Next
+                Using cmd As New MySqlCommand("SELECT product_id FROM products WHERE product_name=@n AND status='Active' LIMIT 1", conn)
+                    cmd.Parameters.AddWithValue("@n", productName)
+                    Dim obj As Object = cmd.ExecuteScalar()
+                    If obj IsNot Nothing AndAlso obj IsNot DBNull.Value Then Return Convert.ToInt32(obj)
+                End Using
             End Using
         Catch ex As Exception
-            MessageBox.Show("Failed to update product stock: " & ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Debug.WriteLine("ResolveProductId failed: " & ex.Message)
         End Try
-    End Sub
+        Return 0
+    End Function
 
-    ' Custom Function para sa InputBox na masked ang character ('*') para sa PIN Security
+    ' Masked PIN prompt — Designer-visible form (frmPinPrompt with btnOK/btnCancel).
     Private Function InputBoxMasked(Prompt As String, Title As String) As String
-        Dim inputForm As New Form()
-        Dim lblPrompt As New Label()
-        Dim txtPin As New TextBox()
-        Dim btnOK As New Button()
-        Dim btnCancel As New Button()
-
-        inputForm.Text = Title
-        inputForm.Size = New Size(320, 160)
-        inputForm.StartPosition = FormStartPosition.CenterParent
-        inputForm.FormBorderStyle = FormBorderStyle.FixedDialog
-        inputForm.MaximizeBox = False
-        inputForm.MinimizeBox = False
-
-        lblPrompt.Text = Prompt
-        lblPrompt.SetBounds(15, 12, 280, 20)
-
-        txtPin.SetBounds(15, 35, 275, 25)
-        txtPin.PasswordChar = "*"c ' Masking characters
-        txtPin.MaxLength = 4
-
-        btnOK.Text = "OK"
-        btnOK.DialogResult = DialogResult.OK
-        btnOK.SetBounds(130, 75, 75, 30)
-
-        btnCancel.Text = "Cancel"
-        btnCancel.DialogResult = DialogResult.Cancel
-        btnCancel.SetBounds(215, 75, 75, 30)
-
-        inputForm.Controls.AddRange(New Control() {lblPrompt, txtPin, btnOK, btnCancel})
-        inputForm.AcceptButton = btnOK
-        inputForm.CancelButton = btnCancel
-
-        If inputForm.ShowDialog() = DialogResult.OK Then
-            Return txtPin.Text.Trim()
-        Else
+        Using d As New frmPinPrompt(Prompt, Title)
+            If d.ShowDialog(Me) = DialogResult.OK Then
+                Return d.PinText
+            End If
             Return ""
-        End If
+        End Using
     End Function
 
     ' Redesigned Clean Receipt Function - Thermal Printer Style
-    Private Function GenerateReceipt(paymentMethod As String, Optional empInfo As String = "", Optional empNo As String = "", Optional empName As String = "", Optional empPosition As String = "", Optional sdRemaining As Decimal = 0, Optional empStatus As String = "", Optional deductionStatus As String = "", Optional amountPaid As Decimal = 0) As String
+    Private Function GenerateReceipt(paymentMethod As String, Optional empInfo As String = "", Optional empNo As String = "", Optional empName As String = "", Optional empPosition As String = "", Optional empStatus As String = "", Optional deductionStatus As String = "", Optional amountPaid As Decimal = 0, Optional transactionNumber As String = "", Optional cashierName As String = "", Optional kioskRef As String = "") As String
         Dim sb As New StringBuilder()
         Dim hasSalaryDeduction As Boolean = paymentMethod.ToLower().Contains("salary") OrElse paymentMethod.ToLower().Contains("deduction")
         Dim lineWidth As Integer = 40
@@ -664,14 +790,17 @@ Public Class frmPOS
         Dim singleLine As String = New String("-"c, lineWidth)
         Dim doubleLine As String = New String("="c, lineWidth)
 
-        ' Generate receipt number
-        Dim receiptNo As String = "#" & DateTime.Now.ToString("yyyy-MMdd-HHmmss")
+        ' Receipt number = persisted DB transaction number (Phase 3); legacy fallback kept.
+        Dim receiptNo As String = If(String.IsNullOrWhiteSpace(transactionNumber), "#" & DateTime.Now.ToString("yyyy-MMdd-HHmmss"), transactionNumber)
 
         ' Header
         sb.AppendLine(doubleLine)
         sb.AppendLine(CenterText("CANTEEN OFFICIAL RECEIPT", lineWidth))
         sb.AppendLine(doubleLine)
+        sb.AppendLine(FormatReceiptLine("RECEIPT NO:", receiptNo))
+        If Not String.IsNullOrWhiteSpace(kioskRef) Then sb.AppendLine(FormatReceiptLine("KIOSK REF:", kioskRef))
         sb.AppendLine(FormatReceiptLine("DATE/TIME:", DateTime.Now.ToString("yyyy-MM-dd hh:mm tt")))
+        If Not String.IsNullOrWhiteSpace(cashierName) Then sb.AppendLine(FormatReceiptLine("CASHIER:", cashierName))
         sb.AppendLine(FormatReceiptLine("PAYMENT:", paymentMethod))
         If Not String.IsNullOrEmpty(empInfo) Then sb.AppendLine(FormatReceiptLine("CHARGE TO:", empInfo))
 
@@ -679,7 +808,6 @@ Public Class frmPOS
             If Not String.IsNullOrEmpty(empNo) Then sb.AppendLine(FormatReceiptLine("EMP NO:", empNo))
             If Not String.IsNullOrEmpty(empName) Then sb.AppendLine(FormatReceiptLine("NAME:", empName))
             If Not String.IsNullOrEmpty(empPosition) Then sb.AppendLine(FormatReceiptLine("POSITION:", empPosition))
-            If sdRemaining > 0 Then sb.AppendLine(FormatReceiptLine("SD REMAIN:", "₱ " & sdRemaining.ToString("N2")))
             If Not String.IsNullOrEmpty(empStatus) Then sb.AppendLine(FormatReceiptLine("STATUS:", empStatus))
             If Not String.IsNullOrEmpty(deductionStatus) Then sb.AppendLine(FormatReceiptLine("DEDUCT:", deductionStatus))
         End If
@@ -772,6 +900,48 @@ Public Class frmPOS
         Return New String(" "c, pad) & text
     End Function
 
+    ' ---- PHASE 7: thermal-style receipt printing ----
+    Private receiptLines As List(Of String)
+    Private receiptLineIndex As Integer = 0
+    Private WithEvents receiptDoc As PrintDocument
+
+    Private Sub PrintReceiptText(receiptText As String, jobName As String)
+        Try
+            receiptLines = New List(Of String)(receiptText.Replace(vbCrLf, vbLf).Split(New Char() {ControlChars.Lf}))
+            receiptLineIndex = 0
+            receiptDoc = New PrintDocument()
+            receiptDoc.DocumentName = If(String.IsNullOrWhiteSpace(jobName), "Canteen Receipt", jobName)
+            Using dlg As New PrintDialog()
+                dlg.Document = receiptDoc
+                If dlg.ShowDialog() = DialogResult.OK Then
+                    Try
+                        receiptDoc.Print()
+                    Catch ex As Exception
+                        MessageBox.Show("Print failed: " & ex.Message, "Print Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    End Try
+                End If
+            End Using
+        Catch ex As Exception
+            MessageBox.Show("Print failed: " & ex.Message, "Print Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub receiptDoc_PrintPage(sender As Object, e As PrintPageEventArgs) Handles receiptDoc.PrintPage
+        Dim f As New Font("Consolas", 9)
+        Dim y As Single = e.MarginBounds.Top
+        Dim lineH As Single = f.GetHeight(e.Graphics) + 2
+        While receiptLineIndex < receiptLines.Count
+            If y + lineH > e.MarginBounds.Bottom Then
+                e.HasMorePages = True
+                Exit Sub
+            End If
+            e.Graphics.DrawString(receiptLines(receiptLineIndex), f, Brushes.Black, e.MarginBounds.Left, y)
+            y += lineH
+            receiptLineIndex += 1
+        End While
+        e.HasMorePages = False
+    End Sub
+
     Private Sub btnCancelPayment_Click(sender As Object, e As EventArgs) Handles btnCancelPayment.Click
         If dgvCart.Rows.Count = 0 Then
             PlaySoftSound("error")
@@ -781,14 +951,25 @@ Public Class frmPOS
 
         Dim confirm = MessageBox.Show("Are you sure you want to cancel this payment?", "Confirm Cancellation", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
         If confirm = DialogResult.Yes Then
+            ClearKioskState() ' a cleared kiosk cart must not attach to the next sale
             dgvCart.Rows.Clear()
             UpdateGrandTotal()
         End If
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles btnLogout.Click
-        Me.Close()
-        frmLogin.Show()
+        Try
+            AuditLog.Log(Session.CurrentUserId, "Logout", $"{Session.CurrentUsername} logged out (POS)")
+        Catch
+        End Try
+        Session.Clear()
+        ClearKioskState()
+        Navigator.ReturnToSystemSelect(Me)
+    End Sub
+
+    ' Header X button was unwired — it now exits to the front door like Logout.
+    Private Sub btnClose_Click(sender As Object, e As EventArgs) Handles btnClose.Click
+        Button1_Click(sender, e)
     End Sub
 
 #End Region

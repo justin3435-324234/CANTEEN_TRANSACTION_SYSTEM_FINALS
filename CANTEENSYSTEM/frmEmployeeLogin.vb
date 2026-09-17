@@ -9,12 +9,11 @@ Public Class frmEmployeeLogin
     Public Property EmployeeUsername As String = ""
     Public Property EmployeeName As String = ""
     Public Property EmployeePosition As String = ""
-    Public Property EmployeeSDRemaining As Decimal = 0
     Public Property EmployeeStatus As String = ""
     Public Property EmployeeDeductionStatus As String = ""
     Public Property IsValidLogin As Boolean = False
 
-    Private Const ConnStr As String = "Server=localhost;Database=school_canteen_db;Uid=root;Pwd=;"
+    ' PHASE 0: connection string lives in DbHelper (App.config).
 
     Friend WithEvents txtUsername As TextBox
     Friend WithEvents txtPin As TextBox
@@ -180,9 +179,9 @@ Public Class frmEmployeeLogin
 
         ' Verify against employees.sql / database (employees table)
         Try
-            Using conn As New MySqlConnection(ConnStr)
+            Using conn As MySqlConnection = DbHelper.GetConnection()
                 conn.Open()
-                Dim query As String = "SELECT employee_number, username, full_name, position, sd_remaining, status, deduction_status FROM employees WHERE username=@username AND pin=@pin LIMIT 1"
+                Dim query As String = "SELECT employee_number, username, full_name, position, status, deduction_status FROM employees WHERE username=@username AND pin=@pin LIMIT 1"
                 Using cmd As New MySqlCommand(query, conn)
                     cmd.Parameters.AddWithValue("@username", usernameInput)
                     cmd.Parameters.AddWithValue("@pin", pin)
@@ -192,11 +191,9 @@ Public Class frmEmployeeLogin
                             EmployeeUsername = reader("username").ToString()
                             EmployeeName = reader("full_name").ToString()
                             EmployeePosition = If(reader("position") Is DBNull.Value, "", reader("position").ToString())
-                            Dim sdRem As Decimal = 2500
-                            If Not IsDBNull(reader("sd_remaining")) Then Decimal.TryParse(reader("sd_remaining").ToString(), sdRem)
-                            EmployeeSDRemaining = sdRem
                             EmployeeStatus = If(reader("status") Is DBNull.Value, "Available", reader("status").ToString())
-                            EmployeeDeductionStatus = If(reader("deduction_status") Is DBNull.Value, "PENDING", reader("deduction_status").ToString())
+                            EmployeeDeductionStatus = If(reader("deduction_status") Is DBNull.Value, "PENDING", reader("deduction_status").ToString().Trim().ToUpper())
+                            If RejectInactiveAccount() Then Exit Sub
                             IsValidLogin = True
                             Me.DialogResult = DialogResult.OK
                             Me.Close()
@@ -206,7 +203,7 @@ Public Class frmEmployeeLogin
                 End Using
 
                 ' Fallback: try case-insensitive username with old column names
-                Dim fallbackQuery As String = "SELECT EmpNo, username, FullName, Position, SDRemaining, Status, DeductionStatus FROM employees WHERE username=@username AND pin=@pin LIMIT 1"
+                Dim fallbackQuery As String = "SELECT EmpNo, username, FullName, Position, Status, DeductionStatus FROM employees WHERE username=@username AND pin=@pin LIMIT 1"
                 Try
                     Using cmd2 As New MySqlCommand(fallbackQuery, conn)
                         cmd2.Parameters.AddWithValue("@username", usernameInput)
@@ -217,11 +214,9 @@ Public Class frmEmployeeLogin
                                 EmployeeUsername = r2("username").ToString()
                                 EmployeeName = r2("FullName").ToString()
                                 EmployeePosition = If(r2("Position") Is DBNull.Value, "", r2("Position").ToString())
-                                Dim sd2 As Decimal = 2500
-                                If Not IsDBNull(r2("SDRemaining")) Then Decimal.TryParse(r2("SDRemaining").ToString(), sd2)
-                                EmployeeSDRemaining = sd2
                                 EmployeeStatus = If(r2("Status") Is DBNull.Value, "Available", r2("Status").ToString())
-                                EmployeeDeductionStatus = If(r2("DeductionStatus") Is DBNull.Value, "PENDING", r2("DeductionStatus").ToString())
+                                EmployeeDeductionStatus = If(r2("DeductionStatus") Is DBNull.Value, "PENDING", r2("DeductionStatus").ToString().Trim().ToUpper())
+                                If RejectInactiveAccount() Then Exit Sub
                                 IsValidLogin = True
                                 Me.DialogResult = DialogResult.OK
                                 Me.Close()
@@ -241,9 +236,9 @@ Public Class frmEmployeeLogin
                     EmployeeUsername = emp.Username
                     EmployeeName = emp.FullName
                     EmployeePosition = emp.Position
-                    EmployeeSDRemaining = emp.SDRemaining
                     EmployeeStatus = emp.Status
                     EmployeeDeductionStatus = emp.DeductionStatus
+                    If RejectInactiveAccount() Then Exit Sub
                     IsValidLogin = True
                     Me.DialogResult = DialogResult.OK
                     Me.Close()
@@ -261,9 +256,9 @@ Public Class frmEmployeeLogin
                 EmployeeUsername = emp.Username
                 EmployeeName = emp.FullName
                 EmployeePosition = emp.Position
-                EmployeeSDRemaining = emp.SDRemaining
                 EmployeeStatus = emp.Status
                 EmployeeDeductionStatus = emp.DeductionStatus
+                If RejectInactiveAccount() Then Exit Sub
                 IsValidLogin = True
                 Me.DialogResult = DialogResult.OK
                 Me.Close()
@@ -281,6 +276,17 @@ Public Class frmEmployeeLogin
         Me.DialogResult = DialogResult.Cancel
         Me.Close()
     End Sub
+
+    ' Deactivated accounts cannot use salary deduction. Returns True when the
+    ' login was refused (dialog already closed cancelled); callers exit.
+    Private Function RejectInactiveAccount() As Boolean
+        If Not String.Equals(EmployeeStatus, "Inactive", StringComparison.OrdinalIgnoreCase) Then Return False
+        MessageBox.Show("This employee account is deactivated." & vbCrLf & "Salary deduction is not allowed.", "Account Deactivated", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        IsValidLogin = False
+        Me.DialogResult = DialogResult.Cancel
+        Me.Close()
+        Return True
+    End Function
 
     Private Function NormalizeEmployeeNumber(input As String) As String
         If String.IsNullOrWhiteSpace(input) Then Return ""

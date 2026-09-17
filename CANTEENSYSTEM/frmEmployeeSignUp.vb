@@ -44,7 +44,7 @@ Public Class frmEmployeeSignUp
         Next
         ' Also check database for max EMP- number to avoid duplicates when memory is empty
         Try
-            Using conn As New MySql.Data.MySqlClient.MySqlConnection("Server=localhost;Database=school_canteen_db;Uid=root;Pwd=;")
+            Using conn As MySql.Data.MySqlClient.MySqlConnection = DbHelper.GetConnection()
                 conn.Open()
                 Using cmd As New MySql.Data.MySqlClient.MySqlCommand("SELECT employee_number FROM employees WHERE employee_number LIKE 'EMP-%'", conn)
                     Using rdr As MySql.Data.MySqlClient.MySqlDataReader = cmd.ExecuteReader()
