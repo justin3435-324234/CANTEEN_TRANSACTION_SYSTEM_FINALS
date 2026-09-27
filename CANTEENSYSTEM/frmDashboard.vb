@@ -1779,45 +1779,80 @@ Public Class frmDashboard
     Private txtOldPass As TextBox
     Private txtNewPass As TextBox
     Private txtConfirmPass As TextBox
+    Private lblSettingsProfile As Label
+
+    Private Sub RefreshSettingsProfile()
+        If lblSettingsProfile Is Nothing Then Exit Sub
+        Try
+            lblSettingsProfile.Text = $"Logged in as: {Session.CurrentFullName} ({Session.CurrentUsername})" & vbCrLf & $"Role: {Session.CurrentRole}"
+        Catch
+        End Try
+    End Sub
 
     Private Sub BuildSettingsControls()
-        If settingsBuilt Then Exit Sub
+        ' Settings content lives inside pnlMainContent next to the 263px
+        ' sidebar. Aligned left with a 12px gap (SET_X=275) so nothing
+        ' hides behind the sidebar and nothing sits too far right.
+        Const SET_X As Integer = 275
+        If settingsBuilt Then
+            RefreshSettingsProfile()
+            Exit Sub
+        End If
         Try
             If pnlSettingsView Is Nothing Then Exit Sub
-            Dim title As New Label()
-            title.Text = "⚙  SETTINGS"
-            title.Font = New Font("Segoe UI", 16, FontStyle.Bold)
-            title.ForeColor = Color.FromArgb(11, 27, 61)
-            title.Location = New Point(30, 20)
-            title.AutoSize = True
-            pnlSettingsView.Controls.Add(title)
+            pnlSettingsView.BackColor = Color.FromArgb(0, 0, 64)
+            pnlSettingsView.AutoScroll = True
+            Dim navyCard As Color = ColorTranslator.FromHtml("#102A5C")
+            Dim gold As Color = ColorTranslator.FromHtml("#F5C21B")
 
-            Dim meName As String = "", meRole As String = "", meUser As String = ""
-            Try
-                meName = Session.CurrentFullName
-                meRole = Session.CurrentRole
-                meUser = Session.CurrentUsername
-            Catch
-            End Try
-            Dim profile As New Label()
-            profile.Text = $"Logged in as: {meName} ({meUser})" & vbCrLf & $"Role: {meRole}"
-            profile.Font = New Font("Segoe UI", 11)
-            profile.ForeColor = Color.FromArgb(11, 27, 61)
-            profile.Location = New Point(30, 60)
-            profile.AutoSize = True
-            pnlSettingsView.Controls.Add(profile)
+            ' Gold header bar matching Reports view.
+            Dim header As New Panel()
+            header.BackColor = gold
+            header.Location = New Point(SET_X, -2)
+            header.Size = New Size(Math.Max(400, pnlSettingsView.Width - SET_X - 10), 60)
+            header.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+            Dim hdrTitle As New Label()
+            hdrTitle.Text = "SETTINGS"
+            hdrTitle.Font = New Font("Segoe UI", 15.75!, FontStyle.Bold)
+            hdrTitle.ForeColor = Color.Black
+            hdrTitle.Location = New Point(12, 7)
+            hdrTitle.AutoSize = True
+            header.Controls.Add(hdrTitle)
+            Dim hdrSub As New Label()
+            hdrSub.Text = "Manage profile, password and backups"
+            hdrSub.Font = New Font("Segoe UI Semibold", 8.25!, FontStyle.Bold)
+            hdrSub.ForeColor = Color.Black
+            hdrSub.Location = New Point(13, 38)
+            hdrSub.AutoSize = True
+            header.Controls.Add(hdrSub)
+            pnlSettingsView.Controls.Add(header)
+
+            lblSettingsProfile = New Label()
+            lblSettingsProfile.Font = New Font("Segoe UI", 10)
+            lblSettingsProfile.ForeColor = Color.White
+            lblSettingsProfile.Location = New Point(SET_X + 10, 68)
+            lblSettingsProfile.AutoSize = True
+            lblSettingsProfile.Anchor = AnchorStyles.Top Or AnchorStyles.Left
+            pnlSettingsView.Controls.Add(lblSettingsProfile)
+            RefreshSettingsProfile()
 
             Dim grp As New GroupBox()
             grp.Text = "Change Password"
             grp.Font = New Font("Segoe UI", 10, FontStyle.Bold)
-            grp.Location = New Point(30, 130)
-            grp.Size = New Size(360, 210)
+            grp.ForeColor = gold
+            grp.BackColor = navyCard
+            grp.Location = New Point(SET_X + 10, 118)
+            grp.Size = New Size(400, 208)
+            grp.Anchor = AnchorStyles.Top Or AnchorStyles.Left
             pnlSettingsView.Controls.Add(grp)
 
             Dim mkLabel As Func(Of String, Integer, Label) =
                 Function(t As String, yy As Integer) As Label
                     Dim l As New Label()
                     l.Text = t
+                    l.Font = New Font("Segoe UI", 9)
+                    l.ForeColor = Color.White
+                    l.BackColor = Color.Transparent
                     l.Location = New Point(20, yy)
                     l.AutoSize = True
                     grp.Controls.Add(l)
@@ -1827,7 +1862,9 @@ Public Class frmDashboard
                 Function(yy As Integer) As TextBox
                     Dim b As New TextBox()
                     b.Location = New Point(150, yy - 3)
-                    b.Size = New Size(180, 24)
+                    b.Size = New Size(220, 24)
+                    b.BackColor = Color.White
+                    b.ForeColor = Color.Black
                     b.UseSystemPasswordChar = True
                     grp.Controls.Add(b)
                     Return b
@@ -1845,12 +1882,54 @@ Public Class frmDashboard
                     If btnChangePassword.Parent IsNot Nothing Then btnChangePassword.Parent.Controls.Remove(btnChangePassword)
                     grp.Controls.Add(btnChangePassword)
                 End If
-                btnChangePassword.Location = New Point(20, 140)
+                btnChangePassword.BackColor = gold
+                btnChangePassword.ForeColor = Color.Black
+                btnChangePassword.FlatStyle = FlatStyle.Flat
+                btnChangePassword.FlatAppearance.BorderSize = 0
+                btnChangePassword.Font = New Font("Segoe UI", 9, FontStyle.Bold)
+                btnChangePassword.Text = "UPDATE PASSWORD"
+                btnChangePassword.Location = New Point(20, 132)
+                btnChangePassword.Size = New Size(350, 34)
+                btnChangePassword.Anchor = AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
                 btnChangePassword.BringToFront()
             End If
 
-            ' Designer-visible: btnBackup already in pnlSettingsView.
-            If btnBackup IsNot Nothing Then btnBackup.BringToFront()
+            ' Backup card stacked below password group (never absolute Y=360).
+            Dim backupGrp As New GroupBox()
+            backupGrp.Text = "Database Backup"
+            backupGrp.Font = New Font("Segoe UI", 10, FontStyle.Bold)
+            backupGrp.ForeColor = gold
+            backupGrp.BackColor = navyCard
+            backupGrp.Location = New Point(SET_X + 10, grp.Bottom + 10)
+            backupGrp.Size = New Size(400, 132)
+            backupGrp.Anchor = AnchorStyles.Top Or AnchorStyles.Left
+            pnlSettingsView.Controls.Add(backupGrp)
+            Dim backupDesc As New Label()
+            backupDesc.Text = "Save a timestamped .sql copy to Documents."
+            backupDesc.Font = New Font("Segoe UI", 9)
+            backupDesc.ForeColor = Color.White
+            backupDesc.BackColor = Color.Transparent
+            backupDesc.Location = New Point(20, 26)
+            backupDesc.Size = New Size(350, 22)
+            backupGrp.Controls.Add(backupDesc)
+
+            ' Designer-visible: btnBackup reparented into the backup card.
+            If btnBackup IsNot Nothing Then
+                If btnBackup.Parent IsNot backupGrp Then
+                    If btnBackup.Parent IsNot Nothing Then btnBackup.Parent.Controls.Remove(btnBackup)
+                    backupGrp.Controls.Add(btnBackup)
+                End If
+                btnBackup.BackColor = Color.FromArgb(20, 90, 50)
+                btnBackup.ForeColor = Color.White
+                btnBackup.FlatStyle = FlatStyle.Flat
+                btnBackup.FlatAppearance.BorderSize = 0
+                btnBackup.Font = New Font("Segoe UI", 9, FontStyle.Bold)
+                btnBackup.Text = "⬇ BACKUP DATABASE"
+                btnBackup.Location = New Point(20, 54)
+                btnBackup.Size = New Size(350, 36)
+                btnBackup.Anchor = AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
+                btnBackup.BringToFront()
+            End If
 
             settingsBuilt = True
         Catch ex As Exception

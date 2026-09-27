@@ -1894,6 +1894,8 @@ Partial Class frmDashboard
         '
         'pnlSettingsView
         '
+        Me.pnlSettingsView.AutoScroll = True
+        Me.pnlSettingsView.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(64, Byte), Integer))
         Me.pnlSettingsView.Controls.Add(Me.btnBackup)
         Me.pnlSettingsView.Controls.Add(Me.btnChangePassword)
         Me.pnlSettingsView.Dock = System.Windows.Forms.DockStyle.Fill
@@ -1910,7 +1912,7 @@ Partial Class frmDashboard
         Me.btnBackup.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnBackup.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnBackup.ForeColor = System.Drawing.Color.White
-        Me.btnBackup.Location = New System.Drawing.Point(30, 360)
+        Me.btnBackup.Location = New System.Drawing.Point(285, 410)
         Me.btnBackup.Margin = New System.Windows.Forms.Padding(4)
         Me.btnBackup.Name = "btnBackup"
         Me.btnBackup.Size = New System.Drawing.Size(360, 36)
@@ -1925,7 +1927,7 @@ Partial Class frmDashboard
         Me.btnChangePassword.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnChangePassword.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnChangePassword.ForeColor = System.Drawing.Color.White
-        Me.btnChangePassword.Location = New System.Drawing.Point(20, 140)
+        Me.btnChangePassword.Location = New System.Drawing.Point(323, 270)
         Me.btnChangePassword.Margin = New System.Windows.Forms.Padding(4)
         Me.btnChangePassword.Name = "btnChangePassword"
         Me.btnChangePassword.Size = New System.Drawing.Size(310, 32)
