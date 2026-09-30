@@ -23,6 +23,13 @@ Public Class frmDashboard
     Private suppressDeductionReload As Boolean = False
     Private suppressDeductionEvent As Boolean = False
 
+    ' Single source for the role filter: mirrors frmEmployeeSignUp cmbPosition
+    ' items. Filtering is position-only (ApplySalaryFilter matches colPosition).
+    Private Shared ReadOnly SalaryPositionRoles As String() = {
+        "Teacher", "Staff", "Admin", "Security", "Maintenance",
+        "Canteen Staff", "Librarian", "Nurse", "Guidance Counselor", "IT Personnel"
+    }
+
     Public Sub New(role As String)
         InitializeComponent()
         Me.userRole = role
@@ -46,8 +53,11 @@ Public Class frmDashboard
             For Each ctrl As Control In pnlDashboardView.Controls
                 If TypeOf ctrl Is Panel Then
                     AddHandler ctrl.Paint, AddressOf DrawCardGoldBorders
+                    AddHandler ctrl.Resize, AddressOf DashboardCard_Resized
                 End If
             Next
+            CenterDashboardKpiLabels()
+            AlignInventoryCounts()
 
             ' 4. Apply modern chart styling
             StyleNativeDashboardChart()
@@ -154,8 +164,45 @@ Public Class frmDashboard
             If lblTotalEmployeesCount IsNot Nothing Then lblTotalEmployeesCount.Text = summaries.Count.ToString()
             If lblPendingCount IsNot Nothing Then lblPendingCount.Text = "₱" & pendingTotal.ToString("N2")
             If lblCompletedDeduction IsNot Nothing Then lblCompletedDeduction.Text = "₱" & deductedTotal.ToString("N2")
+            CenterSalaryKpiLabels()
         Catch ex As Exception
             Debug.WriteLine("UpdateSalaryKpis failed: " & ex.Message)
+        End Try
+    End Sub
+
+    ' KPI values widen as totals grow (P0.00 -> P1,000.00), so fixed-Location
+    ' AutoSize labels drift right. Center each value in its card at runtime
+    ' (Designer untouched): full-width, MiddleCenter, re-applied after every update.
+    Private Sub CenterSalaryKpiLabels()
+        Try
+            CenterKpiLabel(lblTotalEmployeesCount, pnlTotalEmployees)
+            CenterKpiLabel(lblPendingCount, Panel5)
+            CenterKpiLabel(lblCompletedDeduction, pnlLimitReached)
+        Catch ex As Exception
+            Debug.WriteLine("CenterSalaryKpiLabels failed: " & ex.Message)
+        End Try
+    End Sub
+
+    Private Sub CenterKpiLabel(valueLabel As Label, card As Control)
+        If valueLabel Is Nothing OrElse card Is Nothing Then Exit Sub
+        valueLabel.AutoSize = False
+        valueLabel.TextAlign = ContentAlignment.MiddleCenter
+        valueLabel.Width = Math.Max(40, card.Width - 16)
+        valueLabel.Left = (card.Width - valueLabel.Width) \ 2
+        ' Shrink long totals (e.g. P10,000,000.00) so they stay on one centered line.
+        Dim full As New Font(valueLabel.Font.FontFamily, 18.0!, FontStyle.Bold)
+        Dim small As New Font(valueLabel.Font.FontFamily, 13.0!, FontStyle.Bold)
+        Try
+            Using g As Graphics = valueLabel.CreateGraphics()
+                If g.MeasureString(valueLabel.Text, full).Width > valueLabel.Width Then
+                    If valueLabel.Font.Size <> 13.0! Then valueLabel.Font = small
+                Else
+                    If valueLabel.Font.Size <> 18.0! Then valueLabel.Font = full
+                End If
+            End Using
+        Finally
+            full.Dispose()
+            small.Dispose()
         End Try
     End Sub
 
@@ -171,6 +218,26 @@ Public Class frmDashboard
             If cmbRoleFilter IsNot Nothing Then
                 cmbRoleFilter.ForeColor = Color.Black
                 If cmbRoleFilter.BackColor <> Color.White Then cmbRoleFilter.BackColor = Color.White
+                ' Role filter mirrors employee-registration Positions (position-only
+                ' filtering in ApplySalaryFilter). Runtime repopulate so new roles
+                ' stay filterable without Designer edits.
+                Try
+                    Dim keep As String = If(cmbRoleFilter.SelectedItem IsNot Nothing, cmbRoleFilter.SelectedItem.ToString().Trim(), cmbRoleFilter.Text.Trim())
+                    cmbRoleFilter.Items.Clear()
+                    cmbRoleFilter.Items.Add("All Roles")
+                    For Each r As String In SalaryPositionRoles
+                        cmbRoleFilter.Items.Add(r)
+                    Next
+                    Dim idx As Integer = -1
+                    If Not String.IsNullOrWhiteSpace(keep) Then
+                        For i As Integer = 0 To cmbRoleFilter.Items.Count - 1
+                            If String.Equals(cmbRoleFilter.Items(i).ToString().Trim(), keep, StringComparison.OrdinalIgnoreCase) Then idx = i : Exit For
+                        Next
+                    End If
+                    cmbRoleFilter.SelectedIndex = If(idx >= 0, idx, 0)
+                Catch ex As Exception
+                    Debug.WriteLine("PopulateRoleFilter failed: " & ex.Message)
+                End Try
                 suppressDeductionReload = True
                 cmbDeductionFilter = New ComboBox()
                 cmbDeductionFilter.Name = "cmbDeductionFilter"
@@ -186,6 +253,15 @@ Public Class frmDashboard
                 If pnlSalaryDeductionView IsNot Nothing Then pnlSalaryDeductionView.Controls.Add(cmbDeductionFilter)
                 suppressDeductionReload = False
             End If
+            ' Keep KPI values centered if cards resize (window resize / DPI).
+            Try
+                AddHandler pnlTotalEmployees.Resize, AddressOf SalaryKpiCard_Resized
+                AddHandler Panel5.Resize, AddressOf SalaryKpiCard_Resized
+                AddHandler pnlLimitReached.Resize, AddressOf SalaryKpiCard_Resized
+            Catch ex As Exception
+                Debug.WriteLine("SalaryKpi resize hook failed: " & ex.Message)
+            End Try
+            CenterSalaryKpiLabels()
             salaryControlsBuilt = True
         Catch ex As Exception
             Debug.WriteLine("BuildSalaryControls failed: " & ex.Message)
@@ -195,6 +271,63 @@ Public Class frmDashboard
     Private Sub cmbDeductionFilter_SelectedIndexChanged(sender As Object, e As EventArgs)
         If suppressDeductionReload Then Exit Sub
         ApplySalaryFilter()
+    End Sub
+
+    Private Sub SalaryKpiCard_Resized(sender As Object, e As EventArgs)
+        CenterSalaryKpiLabels()
+    End Sub
+
+    ' Dashboard KPI cards (Today's Sale / Transactions / Items Sold / Salary
+    ' Deductions): same drift bug as the salary cards — AutoSize + fixed Location
+    ' lets growing values (P232.00 -> P12,500.00) overflow the card's right edge.
+    ' Runtime centering only (Designer untouched).
+    Private Sub CenterDashboardKpiLabels()
+        Try
+            CenterKpiLabel(lblTodaySalesVal, Panel1)
+            CenterKpiLabel(lblTransactionsVal, cardTransactions)
+            CenterKpiLabel(lblItemsSoldVal, cardItemsSold)
+            CenterKpiLabel(lblSalaryDeductionVal, cardSalaryDeduction)
+            CenterTitleLabel(lblSalesTitle, Panel1)
+            CenterTitleLabel(lblTransTitle, cardTransactions)
+            CenterTitleLabel(lblDeductionTitle, cardItemsSold)
+            CenterTitleLabel(lblDeductTitle, cardSalaryDeduction)
+        Catch ex As Exception
+            Debug.WriteLine("CenterDashboardKpiLabels failed: " & ex.Message)
+        End Try
+    End Sub
+
+    ' Titles are static short text: center once, no font shrinking.
+    Private Sub CenterTitleLabel(titleLabel As Label, card As Control)
+        If titleLabel Is Nothing OrElse card Is Nothing Then Exit Sub
+        titleLabel.AutoSize = False
+        titleLabel.TextAlign = ContentAlignment.MiddleCenter
+        titleLabel.Width = Math.Max(40, card.Width - 8)
+        titleLabel.Left = (card.Width - titleLabel.Width) \ 2
+    End Sub
+
+    ' Inventory alert counts sit at fixed x=200, so 3-digit counts drift right.
+    ' Pin them as a right-aligned column against the panel's right edge instead.
+    Private Sub AlignInventoryCounts()
+        Try
+            AlignInventoryCount(lblLowSValue)
+            AlignInventoryCount(lblInStockValue)
+            AlignInventoryCount(lblOutStockVal)
+        Catch ex As Exception
+            Debug.WriteLine("AlignInventoryCounts failed: " & ex.Message)
+        End Try
+    End Sub
+
+    Private Sub AlignInventoryCount(countLabel As Label)
+        If countLabel Is Nothing OrElse pnlInventoryAlerts Is Nothing Then Exit Sub
+        countLabel.AutoSize = False
+        countLabel.TextAlign = ContentAlignment.MiddleRight
+        countLabel.Width = 120
+        countLabel.Left = Math.Max(0, pnlInventoryAlerts.Width - countLabel.Width - 14)
+    End Sub
+
+    Private Sub DashboardCard_Resized(sender As Object, e As EventArgs)
+        CenterDashboardKpiLabels()
+        AlignInventoryCounts()
     End Sub
 
     ' Size the flow panel from its lowest button so wrapped rows (MARK /
@@ -301,8 +434,10 @@ Public Class frmDashboard
         Catch ex As Exception
             Debug.WriteLine("RefreshDashboardStats KPIs failed: " & ex.Message)
         End Try
+        CenterDashboardKpiLabels()
         LoadRecentTransactions()
         LoadInventoryAlerts()
+        AlignInventoryCounts()
         UpdateDashboardChart()
     End Sub
 
@@ -796,7 +931,7 @@ Public Class frmDashboard
         If String.IsNullOrWhiteSpace(newName) Then Exit Sub
         newName = newName.Trim()
 
-        Dim newPos As String = frmThemedPrompt.Ask($"Edit Position for {empNo}:" & vbCrLf & "Options: Teacher, Staff, Admin, Security, etc.", "Edit Position", curPos)
+        Dim newPos As String = frmThemedPrompt.Ask($"Edit Position for {empNo}:" & vbCrLf & "Options: " & String.Join(", ", SalaryPositionRoles), "Edit Position", curPos)
         If newPos Is Nothing Then newPos = curPos
         If String.IsNullOrWhiteSpace(newPos) Then newPos = curPos
         newPos = newPos.Trim()

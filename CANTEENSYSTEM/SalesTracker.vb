@@ -106,12 +106,9 @@ Module SalesTracker
     Public Sub AddEmployee(empNo As String, username As String, fullName As String, position As String, status As String, deductionStatus As String)
         ' Canonical casing: employees.deduction_status is ALWAYS ALL-CAPS in this system.
         deductionStatus = If(String.IsNullOrWhiteSpace(deductionStatus), "PENDING", deductionStatus.Trim().ToUpper())
+        If String.Equals(status, "Available", StringComparison.OrdinalIgnoreCase) Then status = "Active"
+        If String.IsNullOrWhiteSpace(status) Then status = "Active"
         EnsureEmployeeSchema()
-        Try
-            System.IO.File.AppendAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "canteen_debug_signup.log"), $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} AddEmployee empNo='{empNo}' usernameParam='{username}' fullName='{fullName}'" & vbCrLf)
-        Catch
-        End Try
-        System.Diagnostics.Debug.WriteLine($"AddEmployee empNo={empNo}, username={username}, fullName={fullName}")
 
         ' Check if employee already exists (by EmpNo)
         Dim existing = _employees.FirstOrDefault(Function(e) e.EmpNo = empNo)
@@ -146,6 +143,9 @@ Module SalesTracker
     ' Save employee to MySQL database
     Private Sub SaveEmployeeToDatabase(empNo As String, username As String, fullName As String, position As String, status As String, deductionStatus As String)
         deductionStatus = If(String.IsNullOrWhiteSpace(deductionStatus), "PENDING", deductionStatus.Trim().ToUpper())
+        ' Defensive: legacy callers pass "Available"; schema enum is Active/Inactive.
+        If String.Equals(status, "Available", StringComparison.OrdinalIgnoreCase) Then status = "Active"
+        If String.IsNullOrWhiteSpace(status) Then status = "Active"
         Try
             Using conn As MySqlConnection = DbHelper.GetConnection()
                 conn.Open()
@@ -308,6 +308,12 @@ Module SalesTracker
                 Using guard As New MySqlCommand("SELECT COUNT(*) FROM salary_deductions WHERE employee_number=@e", conn)
                     guard.Parameters.AddWithValue("@e", empNo)
                     If Convert.ToInt32(guard.ExecuteScalar()) > 0 Then Return False
+                End Using
+                ' Kiosk orders carry employee_number with no FK — deleting here would
+                ' orphan pending rows and cause the same FK failure at POS completion.
+                Using kguard As New MySqlCommand("SELECT COUNT(*) FROM kiosk_orders WHERE employee_number=@e AND status IN ('Pending','Processing')", conn)
+                    kguard.Parameters.AddWithValue("@e", empNo)
+                    If Convert.ToInt32(kguard.ExecuteScalar()) > 0 Then Return False
                 End Using
                 Try
                     Using cmd As New MySqlCommand("DELETE FROM employees WHERE employee_number=@empNo", conn)

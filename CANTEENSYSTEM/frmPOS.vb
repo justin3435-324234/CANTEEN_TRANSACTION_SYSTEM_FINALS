@@ -44,7 +44,11 @@ Public Class frmPOS
         SetActiveCategoryButton(btnCatAll)
         ApplyButtonHoverEffects()
 
-        ' Initialize payment method state
+        ' Initialize payment method state.
+        ' Designer has BOTH radios Checked=True (last-wins = Salary default, a
+        ' mis-charge risk). Enforce Cash default here — no Designer edit per convention.
+        rdoCash.Checked = True
+        rdoSalaryDeduction.Checked = False
         If rdoSalaryDeduction.Checked Then
             txtAmountPaid.Enabled = False
         Else
@@ -132,6 +136,23 @@ Public Class frmPOS
     End Sub
 
     ' Status snapshot for a kiosk-authenticated employee (skips re-auth at POS).
+    ' Returns False when the employee row is missing (orphan kiosk identity) so the
+    ' caller can block the salary charge instead of hitting the FK at commit time.
+    Private Function EmployeeExistsInDb(empNumber As String) As Boolean
+        Try
+            Using conn As MySqlConnection = DbHelper.GetConnection()
+                conn.Open()
+                Using cmd As New MySqlCommand("SELECT COUNT(*) FROM employees WHERE employee_number=@e", conn)
+                    cmd.Parameters.AddWithValue("@e", empNumber)
+                    Return Convert.ToInt32(cmd.ExecuteScalar()) > 0
+                End Using
+            End Using
+        Catch ex As Exception
+            Debug.WriteLine("EmployeeExistsInDb failed: " & ex.Message)
+            Return False
+        End Try
+    End Function
+
     Private Sub LoadKioskEmployeeBalance(empNumber As String, ByRef empStatus As String, ByRef deductionStatus As String)
         empStatus = "Active"
         deductionStatus = "PENDING"
@@ -573,7 +594,7 @@ Public Class frmPOS
         Dim empName As String = ""
         Dim empPosition As String = ""
         Dim empNo As String = ""
-        Dim empStatus As String = "Available"
+        Dim empStatus As String = "Active"
         Dim deductionStatus As String = "PENDING" ' Default to PENDING
         Dim signupUsername As String = ""
         Dim isNewEmployee As Boolean = False
@@ -607,13 +628,9 @@ Public Class frmPOS
                     signupUsername = signupForm.Username
                     empName = signupForm.FullName
                     empPosition = signupForm.Position
-                    Try
-                        System.IO.File.AppendAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "canteen_debug_signup.log"), $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} POS after dialog empNo='{empNo}' signupUsername='{signupUsername}' UsernameProp='{signupForm.Username}' EmpNoProp='{signupForm.EmployeeNumber}'" & vbCrLf)
-                    Catch
-                    End Try
 
-                    ' Set default values for new employee
-                    empStatus = "Available"
+                    ' Set default values for new employee (schema enum: Active/Inactive).
+                    empStatus = "Active"
                     deductionStatus = "PENDING"
 
                     empID = empNo & " - " & empName
@@ -688,6 +705,31 @@ Public Class frmPOS
             Exit Sub
         End If
 
+        ' FIX (FK fk_deduction_employee): salary_deductions FKs to employees, so a
+        ' NEW signup must be persisted BEFORE Checkout — never after. Checkout runs
+        ' inside one MySqlTransaction and its salary INSERT fails when the parent
+        ' employees row does not exist yet (the screenshot error). Persist here,
+        ' verify the row exists, and only then commit the sale.
+        If TransactionService.IsSalaryPayment(paymentMethod) AndAlso Not String.IsNullOrWhiteSpace(empNo) Then
+            If isNewEmployee Then
+                If String.IsNullOrWhiteSpace(signupUsername) Then signupUsername = empNo
+                SalesTracker.AddEmployee(empNo, signupUsername, empName, empPosition, empStatus, deductionStatus)
+                isNewEmployee = False ' now persisted; post-sale block must not re-insert
+            End If
+            If Not EmployeeExistsInDb(empNo) Then
+                PlaySoftSound("error")
+                MessageBox.Show($"Employee '{empNo}' was not found in the database, so the salary charge was blocked and nothing was saved.{vbCrLf}{vbCrLf}Re-register / re-login the employee and retry. Cash sales are unaffected.",
+                                "Unknown Employee", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Exit Sub
+            End If
+            If String.Equals(empStatus, "Inactive", StringComparison.OrdinalIgnoreCase) Then
+                PlaySoftSound("error")
+                MessageBox.Show($"Employee '{empNo}' is Inactive, so salary deduction is blocked and nothing was saved.",
+                                "Inactive Employee", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Exit Sub
+            End If
+        End If
+
         Dim changeAmount As Decimal = 0
         If paymentMethod.ToLower().Contains("cash") Then changeAmount = amountPaid - grandTotal
 
@@ -703,14 +745,15 @@ Public Class frmPOS
         End If
 
         ' ---- Salary side-effects, only after a committed sale ----
+        ' NOTE: new employees are persisted BEFORE Checkout (FK requirement), so this
+        ' block only syncs the open Dashboard view — it must not re-insert.
         If TransactionService.IsSalaryPayment(paymentMethod) AndAlso Not String.IsNullOrWhiteSpace(empNo) Then
             If isNewEmployee Then
-                Try
-                    System.IO.File.AppendAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "canteen_debug_signup.log"), $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} POS after committed sale AddEmployee empNo='{empNo}' signupUsername='{signupUsername}' empName='{empName}'" & vbCrLf)
-                Catch
-                End Try
                 If String.IsNullOrWhiteSpace(signupUsername) Then signupUsername = empNo
-                SalesTracker.AddEmployee(empNo, signupUsername, empName, empPosition, empStatus, deductionStatus)
+                ' Already saved pre-checkout; keep as safety net only if the row is missing.
+                If Not EmployeeExistsInDb(empNo) Then
+                    SalesTracker.AddEmployee(empNo, signupUsername, empName, empPosition, empStatus, deductionStatus)
+                End If
                 For Each f As Form In Application.OpenForms
                     If TypeOf f Is frmDashboard Then
                         CType(f, frmDashboard).AddEmployee(empNo, signupUsername, empName, empPosition, empStatus, deductionStatus)

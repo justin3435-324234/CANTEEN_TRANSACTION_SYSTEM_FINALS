@@ -199,6 +199,26 @@ Public Module TransactionService
                 conn.Open()
                 Using tx As MySqlTransaction = conn.BeginTransaction()
                     Try
+                        ' Salary guard: salary_deductions.employee_number FKs to
+                        ' employees.employee_number, so fail fast with a friendly
+                        ' message instead of a raw MySQL 1452 FK error. Empty is
+                        ' rejected (never silently skip the deduction row), missing
+                        ' or Inactive employees are blocked before any write.
+                        If isSalary Then
+                            If String.IsNullOrWhiteSpace(employeeNumber) Then
+                                Throw New Exception("Salary Deduction needs an employee login (nothing was saved). Cancel and retry with an employee, or use Cash.")
+                            End If
+                            Using chk As New MySqlCommand("SELECT status FROM employees WHERE employee_number=@e LIMIT 1", conn, tx)
+                                chk.Parameters.AddWithValue("@e", employeeNumber)
+                                Dim st As Object = chk.ExecuteScalar()
+                                If st Is Nothing OrElse st Is DBNull.Value Then
+                                    Throw New Exception($"Employee '{employeeNumber}' was not found (nothing was saved). Re-register / re-login and retry.")
+                                End If
+                                If String.Equals(st.ToString(), "Inactive", StringComparison.OrdinalIgnoreCase) Then
+                                    Throw New Exception($"Employee '{employeeNumber}' is Inactive — salary deduction blocked (nothing was saved).")
+                                End If
+                            End Using
+                        End If
                         ' 1. Header (number stamped below from the real auto-id).
                         Dim tid As Integer
                         Using cmd As New MySqlCommand("INSERT INTO transactions (transaction_date, user_id, total_amount, cash_received, change_amount, payment_method, status, employee_number) VALUES (NOW(), @uid, @total, @cash, @chg, @pm, 'Completed', @emp)", conn, tx)
@@ -246,7 +266,8 @@ Public Module TransactionService
                         Next
 
                         ' 3. Salary deduction row (no-limit rule: any amount allowed).
-                        If isSalary AndAlso Not String.IsNullOrWhiteSpace(employeeNumber) Then
+                        ' employeeNumber is guaranteed non-empty + existing by the guard above.
+                        If isSalary Then
                             Using ded As New MySqlCommand("INSERT INTO salary_deductions (employee_number, transaction_id, deduction_amount, deduction_status, remarks) VALUES (@emp, @tid, @amt, 'Pending', @rem)", conn, tx)
                                 ded.Parameters.AddWithValue("@emp", employeeNumber)
                                 ded.Parameters.AddWithValue("@tid", tid)
@@ -284,7 +305,12 @@ Public Module TransactionService
                             tx.Rollback()
                         Catch
                         End Try
-                        res.Message = ex.Message
+                        ' Map the raw FK error to something a cashier can act on.
+                        Dim msg As String = ex.Message
+                        If msg.Contains("fk_deduction_employee") OrElse msg.Contains("foreign key constraint fails") Then
+                            msg = $"Employee '{employeeNumber}' was not found, so the salary charge was blocked and rolled back (nothing was saved). Re-register / re-login the employee and retry."
+                        End If
+                        res.Message = msg
                     End Try
                 End Using
             End Using
