@@ -1,0 +1,4 @@
+2026-08-31 20:06:46 SIGNUP txtUsername='justin28' usernameVar='justin28' UsernameProp='justin28' EmpNo='EMP-002' FullName='justin manzano'
+2026-08-31 20:06:46 POS after dialog empNo='EMP-002' signupUsername='justin28' UsernameProp='justin28' EmpNoProp='EMP-002'
+2026-08-31 20:06:46 POS before AddEmployee empNo='EMP-002' signupUsername='justin28' empName='justin manzano'
+2026-08-31 20:06:46 AddEmployee empNo='EMP-002' usernameParam='justin28' fullName='justin manzano'
