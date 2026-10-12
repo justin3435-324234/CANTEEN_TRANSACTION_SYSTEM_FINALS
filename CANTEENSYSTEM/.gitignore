@@ -1,0 +1,13 @@
+﻿# Visual Studio temporary files / user-specific files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+bin/
+obj/
+*.exe
+*.pdb
+*.vshost.*
